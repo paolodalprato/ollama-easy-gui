@@ -1,0 +1,387 @@
+/* ====================================================================
+   LEGACY COMPATIBILITY LAYER - Phoenix Transformation Bridge
+   ====================================================================
+
+   PURPOSE: Temporary compatibility layer during CSS refactoring
+   - Maintains all remaining styles from original styles.css
+   - Enables zero-downtime migration with dual system approach
+   - To be removed progressively when modules are extracted
+
+   MIGRATION STATUS:
+   - Design tokens: ✅ EXTRACTED (lines 1-64)
+   - Legacy styles: ⏳ TEMPORARY (lines 65-1555)
+
+   TODO: Remove progressively when the following modules are extracted:
+   - header-navigation.css (lines 65-112)
+   - buttons.css (scattered throughout)
+   - layout system (lines 113-142)
+   - chat interface (lines 261-415)
+   - modals (lines 672-1555)
+   
+   LAST UPDATED: 2025-08-29 - Phase 2 CSS Refactoring
+   ==================================================================== */
+
+/* HEADER STYLES EXTRACTED to css/components/header-navigation.css */
+/* STATUS SYSTEM EXTRACTED to css/components/header-navigation.css */
+/* BUTTON STYLES EXTRACTED to css/components/buttons.css */
+/* MAIN CONTENT LAYOUT EXTRACTED to css/layout/main-layout.css */
+/* SIDEBAR LAYOUT EXTRACTED to css/layout/main-layout.css */
+/* CHAT CONTAINER EXTRACTED to css/layout/main-layout.css */
+/* SECTION TITLE EXTRACTED to css/layout/main-layout.css */
+/* Small button variant moved to components/buttons.css */
+/* SIDEBAR COMPONENTS EXTRACTED to css/components/sidebar-components.css */
+/* Chat items, notifications, and related animations moved to sidebar-components.css */
+/* Storage stats moved to css/layout/main-layout.css */
+/* Model selector moved to css/layout/main-layout.css */
+/* Model info moved to css/layout/main-layout.css */
+/* Ollama status moved to css/layout/main-layout.css */
+/* Status detail/actions moved to css/components/header-navigation.css */
+/* Notifications area moved to css/layout/main-layout.css */
+/* CHAT HEADER EXTRACTED to css/components/chat-interface.css */
+/* CHAT TITLE SYSTEM EXTRACTED to css/components/chat-interface.css */
+/* Delete chat button moved to components/buttons.css */
+/* CHAT MESSAGES EXTRACTED to css/components/chat-interface.css */
+/* MESSAGE SYSTEM EXTRACTED to css/components/chat-interface.css */
+/* Download response button moved to components/buttons.css */
+.download-menu {
+    position: fixed; background: white; border: 2px solid #e1e5e9; border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 8px 0; z-index: 9999;
+    min-width: 120px; display: none;
+}
+.download-menu.show { display: block; }
+.download-menu-item {
+    padding: 8px 16px; cursor: pointer; font-size: 13px; color: #333;
+    border: none; background: none; width: 100%; text-align: left;
+    display: flex; align-items: center; gap: 8px;
+}
+.download-menu-item:hover {
+    background: #f8f9fa; color: #667eea;
+}
+/* CHAT INPUT SYSTEM EXTRACTED to css/components/form-components.css */
+/* Chat input container, textarea controls, and resize handles moved to form-components.css */
+/* Attachment button moved to components/buttons.css */
+
+.stop-stream-btn {
+    position: absolute; right: 8px; bottom: 43px;
+    background: var(--md-error); color: white; border: 2px solid #000; border-radius: 6px;
+    padding: 4px; cursor: pointer; z-index: 5;
+    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+}
+.stop-stream-btn img {
+    width: 14px; height: 14px; filter: brightness(0) invert(1);
+}
+.stop-stream-btn:hover { 
+    background-color: #b02a37; border-color: #000; transform: scale(1.05);
+}
+.stop-stream-btn:active {
+    background-color: #8b1e2b; transform: scale(0.98);
+}
+/* Stop button always active - removed disabled states */
+
+.web-search-btn {
+    position: absolute; right: 42px; bottom: 8px;
+    background: #fafafa; color: #333; border: 2px solid #333; border-radius: 6px;
+    padding: 4px; cursor: pointer; z-index: 5;
+    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+}
+.web-search-btn::before {
+    content: '🌐'; font-size: 14px;
+}
+.web-search-btn:hover { 
+    background-color: #f0f0f0; border-color: #000; transform: scale(1.05);
+}
+
+/* Web Search Modal Styles EXTRACTED to css/components/modals.css */
+
+.search-btn {
+    padding: 12px 20px; background: #0066cc; color: white; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+    /* transition extracted to animations-transitions.css */
+}
+
+.search-btn:hover {
+    background: #0052a3; transform: translateY(-1px);
+}
+
+.search-btn:disabled {
+    background: #ccc; cursor: not-allowed; transform: none;
+}
+
+.search-results-container {
+    min-height: 200px; margin-bottom: 20px; border: 1px solid #e1e5e9;
+    border-radius: 8px; padding: 15px;
+}
+
+.search-help {
+    text-align: center; color: #666; font-size: 14px; margin-top: 50px;
+}
+
+/* STATUS INDICATORS EXTRACTED to css/components/status-indicators.css */
+/* Search loading, spinners, and animations moved to status-indicators.css */
+
+.search-results-header {
+    margin-bottom: 15px; font-size: 14px; color: #666;
+    border-bottom: 1px solid #e1e5e9; padding-bottom: 8px;
+}
+
+.search-result-item {
+    border: 1px solid #e1e5e9; border-radius: 8px; padding: 12px;
+    margin-bottom: 10px; transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+    border-color: #0066cc; box-shadow: 0 2px 8px rgba(0,102,204,0.1);
+}
+
+.result-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+
+.result-checkbox {
+    cursor: pointer;
+}
+
+.result-title {
+    flex: 1; font-weight: 600; color: #333; cursor: pointer; font-size: 14px;
+}
+
+.result-type {
+    font-size: 16px;
+}
+
+.result-snippet {
+    color: #555; font-size: 13px; line-height: 1.4; margin: 8px 0;
+    margin-left: 24px;
+}
+
+.result-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-left: 24px; font-size: 12px; color: #888;
+}
+
+.result-url {
+    color: #0066cc; text-decoration: none; font-size: 14px;
+}
+
+.result-url:hover {
+    text-decoration: underline;
+}
+
+.search-actions {
+    display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #e1e5e9;
+    padding-top: 15px;
+}
+
+.action-btn {
+    padding: 8px 16px; border: 2px solid #e1e5e9; border-radius: 6px;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: 500;
+    /* transition extracted to animations-transitions.css */
+}
+
+.action-btn:hover:not(:disabled) {
+    border-color: #0066cc; color: #0066cc; transform: translateY(-1px);
+}
+
+.action-btn.primary {
+    background: #0066cc; color: white; border-color: #0066cc;
+}
+
+.action-btn.primary:hover:not(:disabled) {
+    background: #0052a3; border-color: #0052a3;
+}
+
+.action-btn:disabled {
+    opacity: 0.5; cursor: not-allowed; transform: none;
+}
+
+.search-error, .search-no-results {
+    text-align: center; padding: 40px 20px; color: #666;
+}
+
+.retry-btn {
+    margin-top: 10px; padding: 8px 16px; background: #0066cc; color: white;
+    border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+
+.retry-btn:hover {
+    background: #0052a3;
+}
+
+.model-link-btn {
+    background: #fafafa; color: #333; border: 2px solid #333; border-radius: 6px;
+    padding: 4px; cursor: pointer; transition: all 0.2s ease;
+    background-image: url('../../icon/link.png');
+    background-size: 14px 14px; background-repeat: no-repeat; background-position: center;
+    width: 26px; height: 26px; text-indent: -9999px; /* Hides the text */
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+}
+.model-link-btn:hover {
+    background-color: #f0f0f0; border-color: #000; transform: scale(1.05);
+}
+/* FILE INPUT SYSTEM EXTRACTED to css/components/form-components.css */
+/* File inputs, attachments, drop zones, and related icons moved to form-components.css */
+/* Send button moved to components/buttons.css */
+/* LOADING STATES EXTRACTED to css/components/status-indicators.css */
+/* Generic loading, spinners, and spin animation moved to status-indicators.css */
+.welcome-message { text-align: center; color: #666; font-style: italic; margin: 40px 20px; }
+/* BASE MODAL SYSTEM EXTRACTED to css/components/modals.css */
+/* Fixed Scroll to Top in Right Sidebar */
+/* Scroll to top container moved to css/layout/main-layout.css */
+/* Scroll to top button moved to components/buttons.css */
+
+/* SYSTEM DIAGNOSTICS MODAL EXTRACTED to css/components/modals.css */
+
+/* MODEL MANAGEMENT MODAL EXTRACTED to css/components/modals.css */
+
+/* MODEL CARD SYSTEM EXTRACTED to css/components/modals.css */
+
+/* LOCAL MODELS MANAGEMENT EXTRACTED to css/components/modals.css */
+}
+.local-model-item:hover {
+    border-color: #667eea; background: #f0f4ff;
+}
+.local-model-info {
+    flex: 1;
+}
+.local-model-name {
+    font-weight: 600; color: #333; margin-bottom: 4px;
+}
+.local-model-details {
+    font-size: 12px; color: #666; display: flex; gap: 15px;
+}
+.local-model-actions {
+    display: flex; flex-direction: column; gap: 5px; align-items: center;
+}
+.system-prompt-btn {
+    background: #fafafa; color: #333; border: 2px solid #333; border-radius: 6px;
+    padding: 4px; cursor: pointer; transition: all 0.2s ease;
+    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+    background-image: url('../../icon/text2.png');
+    background-size: 14px 14px; background-repeat: no-repeat; background-position: center;
+    text-indent: -9999px; /* Hides the text */
+}
+.system-prompt-btn:hover {
+    background-color: #f0f0f0; border-color: #000; transform: scale(1.05);
+}
+.remove-btn {
+    background: #fafafa; color: #333; border: 2px solid #333; border-radius: 6px;
+    padding: 4px; cursor: pointer; transition: all 0.2s ease;
+    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+    background-image: url('../../icon/delete.png');
+    background-size: 14px 14px; background-repeat: no-repeat; background-position: center;
+    text-indent: -9999px; /* Hides the text */
+}
+.remove-btn:hover {
+    background-color: #f0f0f0; border-color: #000; transform: scale(1.05);
+}
+.remove-btn:disabled {
+    background: #6c757d; cursor: not-allowed; transform: none;
+}
+
+/* DOWNLOAD PROGRESS EXTRACTED to css/components/status-indicators.css */
+/* Progress bars, progress info, and progress details moved to status-indicators.css */
+
+/* === WEB SEARCH TOGGLE COMPONENT === */
+.web-search-toggle-container {
+    background: #f8f9fa;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    /* transition extracted to animations-transitions.css */
+}
+
+.web-search-toggle-container:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.toggle-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+/* TOGGLE SWITCH SYSTEM EXTRACTED to css/components/form-components.css */
+/* Toggle switches, sliders, and interactive states moved to form-components.css */
+
+/* TOGGLE STATUS STATES EXTRACTED to css/components/status-indicators.css */
+/* Toggle status active/inactive states and web search toggle states moved to status-indicators.css */
+
+.toggle-description {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    text-align: justify;
+}
+
+/* WEB SEARCH TOGGLE RESPONSIVE EXTRACTED to css/components/status-indicators.css */
+/* Responsive toggle adjustments moved to status-indicators.css */
+
+/* UNIFIED FILE SELECTION MODAL EXTRACTED to css/components/modals.css - INCLUDING BASE MODAL RULES AND SHOW STATE */
+
+/* FILE SELECTION MODAL CONTENT EXTRACTED to css/components/modals.css */
+
+/* FILE SELECTION OPTIONS & BROWSER SUPPORT EXTRACTED to css/components/modals.css */
+
+/* ENHANCED FILE BUTTON EXTRACTED to css/components/form-components.css */
+/* Enhanced file buttons and states moved to form-components.css */
+
+/* ENHANCED FILE PREVIEW EXTRACTED to css/components/form-components.css */
+/* File preview container and slideDown animation moved to form-components.css */
+
+/* FILE PREVIEW SYSTEM EXTRACTED to css/components/form-components.css */
+/* File preview header, list, items, and close button moved to form-components.css */
+
+/* FILE ICON/NAME/SIZE COMPONENTS EXTRACTED to css/components/form-components.css */
+/* File display components moved to form-components.css */
+
+/* Insert Content Button */
+.insert-content-btn {
+    background: var(--md-success-light);
+    color: var(--md-on-surface);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    /* transition extracted to animations-transitions.css */
+    margin-right: 8px;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.insert-content-btn:hover {
+    background: var(--md-success-light);
+    transform: translateY(-1px);
+    box-shadow: var(--md-elevation-2);
+}
+
+.insert-content-btn:active {
+    transform: translateY(0);
+}
+
+.insert-content-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* RESPONSIVE UTILITIES EXTRACTED to css/utils/responsive-utilities.css */
+/* All responsive adjustments and media queries moved to responsive-utilities.css */
+
+/* Removed floating controls responsive styles - no longer needed */
+    /* Layout responsive styles moved to css/layout/main-layout.css */
+    /* Header responsive styles moved to css/components/header-navigation.css */
+}
+
+/* SYSTEM PROMPT MODAL EXTRACTED to css/components/modals.css */

@@ -1,0 +1,147 @@
+@echo off
+:: ===============================================================
+:: Ollama Easy GUI - Unified Startup Script
+:: ===============================================================
+:: Configures environment variables for Ollama and starts Ollama Easy GUI
+::
+:: GPU CONFIGURATION (modify these values if needed):
+::   OLLAMA_GPU_LAYERS  = Number of GPU layers (default: 18)
+::   OLLAMA_NUM_THREADS = CPU threads (default: 24)
+::   OLLAMA_CACHE_DIR   = Ollama cache directory
+::
+:: USAGE:
+::   Double-click this file to start Ollama Easy GUI
+::   Browser will open automatically at http://localhost:3003
+:: ===============================================================
+
+setlocal EnableExtensions EnableDelayedExpansion
+
+:: ------------------------------------------------------------------
+:: CONFIGURATION - MODIFY HERE IF NEEDED
+:: ------------------------------------------------------------------
+set "OLLAMA_GPU_LAYERS=18"
+set "OLLAMA_FLASH_ATTENTION=1"
+set "OLLAMA_NUM_THREADS=24"
+set "OLLAMA_CACHE_DIR=D:\Ollama\Ollama_cache"
+
+:: Optional (uncomment if needed):
+:: set "OLLAMA_LOW_VRAM=1"
+:: set "OLLAMA_HOST=0.0.0.0:11434"
+
+:: ------------------------------------------------------------------
+:: HEADER
+:: ------------------------------------------------------------------
+title Ollama Easy GUI - Starting
+echo.
+echo ================================================================
+echo   Ollama Easy GUI v1.0.0
+echo   Local AI Chat - Privacy First
+echo ================================================================
+echo.
+
+:: ------------------------------------------------------------------
+:: NODE.JS CHECK
+:: ------------------------------------------------------------------
+where node >nul 2>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Node.js not found!
+    echo.
+    echo To use Ollama Easy GUI you need to install Node.js:
+    echo   1. Go to https://nodejs.org
+    echo   2. Download the LTS version
+    echo   3. Install and restart this script
+    echo.
+    pause
+    exit /b 1
+)
+
+for /f "tokens=*" %%a in ('node --version 2^>nul') do set NODE_VERSION=%%a
+echo [OK] Node.js detected: %NODE_VERSION%
+
+:: ------------------------------------------------------------------
+:: OPTIONAL UPDATE CHECK
+:: ------------------------------------------------------------------
+where git >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    cd /d "%~dp0"
+    git rev-parse --git-dir >nul 2>nul
+    if !ERRORLEVEL! EQU 0 (
+        echo.
+        choice /C YN /T 5 /D N /M "Check for updates (git pull)? [Y/N, default N in 5s]"
+        if !ERRORLEVEL! EQU 1 (
+            echo [INFO] Checking for updates...
+            git pull
+            if !ERRORLEVEL! EQU 0 (
+                echo [OK] Repository updated
+                echo [INFO] Running npm install to update dependencies...
+                call npm install
+                echo [OK] Dependencies updated
+            ) else (
+                echo [WARN] Update check failed - continuing with current version
+            )
+        ) else (
+            echo [INFO] Skipping update check
+        )
+    ) else (
+        echo [INFO] Not a git repository - auto-update disabled
+        echo        To enable: clone from https://github.com/paolodalprato/ollama-easy-gui
+    )
+)
+
+:: ------------------------------------------------------------------
+:: PROJECT DIRECTORY CHECK
+:: ------------------------------------------------------------------
+set "PROJECT_DIR=%~dp0"
+set "SERVER_PATH=%PROJECT_DIR%app\backend\server.js"
+
+if not exist "%SERVER_PATH%" (
+    echo [ERROR] File server.js not found!
+    echo         Expected path: %SERVER_PATH%
+    echo.
+    pause
+    exit /b 1
+)
+
+echo [OK] Project found: %PROJECT_DIR%
+
+:: ------------------------------------------------------------------
+:: CACHE DIRECTORY CHECK/CREATION
+:: ------------------------------------------------------------------
+if defined OLLAMA_CACHE_DIR (
+    if not exist "%OLLAMA_CACHE_DIR%" (
+        echo [INFO] Creating cache directory: %OLLAMA_CACHE_DIR%
+        mkdir "%OLLAMA_CACHE_DIR%" 2>nul
+    )
+)
+
+:: ------------------------------------------------------------------
+:: SHOW CONFIGURATION
+:: ------------------------------------------------------------------
+echo.
+echo Ollama Configuration:
+echo   GPU Layers : %OLLAMA_GPU_LAYERS%
+echo   Flash Att. : %OLLAMA_FLASH_ATTENTION%
+echo   Threads    : %OLLAMA_NUM_THREADS%
+if defined OLLAMA_CACHE_DIR echo   Cache Dir  : %OLLAMA_CACHE_DIR%
+echo.
+
+:: ------------------------------------------------------------------
+:: START SERVER
+:: ------------------------------------------------------------------
+echo [INFO] Starting Ollama Easy GUI...
+echo        Browser will open automatically
+echo        Press Ctrl+C to stop
+echo.
+
+cd /d "%PROJECT_DIR%"
+node app\backend\server.js
+
+:: ------------------------------------------------------------------
+:: SHUTDOWN
+:: ------------------------------------------------------------------
+echo.
+echo [INFO] Ollama Easy GUI stopped.
+pause
+
+endlocal
+exit /b 0

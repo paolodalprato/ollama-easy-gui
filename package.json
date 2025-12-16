@@ -1,0 +1,95 @@
+{
+  "name": "ollama-easy-gui",
+  "version": "1.0.0",
+  "description": "Ollama Easy GUI - Professional chat interface for Ollama with MCP support, web search, and privacy-first design",
+  "main": "app/backend/server.js",
+  "scripts": {
+    "start": "node app/backend/server.js",
+    "start:production": "NODE_ENV=production node app/backend/server.js",
+    "start:development": "NODE_ENV=development node app/backend/server.js",
+    "start:testing": "NODE_ENV=testing node app/backend/server.js",
+    "test": "node tests/diagnostic_test_suite.js",
+    "test:api": "node tests/api_test_suite.js",
+    "test:performance": "node tests/performance_test_suite.js",
+    "lint": "echo 'Linting not configured - consider adding ESLint'",
+    "validate": "node app/backend/config/ProductionConfig.js --validate",
+    "health-check": "curl -f http://localhost:3003/api/health || exit 1",
+    "dev": "npm run start:development",
+    "prod": "npm run start:production"
+  },
+  "keywords": [
+    "ollama",
+    "ai",
+    "chat",
+    "local-ai",
+    "llm",
+    "gui",
+    "interface",
+    "desktop",
+    "nodejs",
+    "privacy",
+    "offline",
+    "machine-learning",
+    "artificial-intelligence",
+    "mcp",
+    "model-context-protocol",
+    "web-search",
+    "material-design"
+  ],
+  "author": {
+    "name": "Paolo Dalprato",
+    "url": "https://github.com/paolodalprato"
+  },
+  "contributors": [
+    {
+      "name": "Paolo Dalprato",
+      "url": "https://github.com/paolodalprato"
+    },
+    {
+      "name": "Claude (Anthropic)",
+      "url": "https://claude.ai/code"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/paolodalprato/ollama-easy-gui#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paolodalprato/ollama-easy-gui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/paolodalprato/ollama-easy-gui/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.3",
+    "pdf-parse": "^1.1.1"
+  },
+  "bundleDependencies": [],
+  "private": false,
+  "config": {
+    "port": 3003,
+    "host": "localhost"
+  },
+  "directories": {
+    "lib": "app",
+    "test": "tests",
+    "doc": "docs"
+  },
+  "files": [
+    "app/",
+    "docs/",
+    "tests/",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "package.json"
+  ]
+}

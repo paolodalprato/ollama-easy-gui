@@ -1,0 +1,651 @@
+/**
+ * MCP Components Styles - Interfaccia server MCP simile a Claude Desktop
+ */
+
+/* ========== MCP TOGGLE SWITCH IN TITLE ========== */
+.mcp-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.mcp-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.mcp-toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.mcp-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.mcp-toggle-switch input:checked + .mcp-toggle-slider {
+    background-color: #667eea;
+}
+
+.mcp-toggle-switch input:checked + .mcp-toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* ========== MCP COLLAPSED STATE ========== */
+.mcp-section.mcp-collapsed {
+    display: none;
+}
+
+/* ========== MCP SECTION CONTAINER ========== */
+.mcp-section {
+    background: var(--bg-secondary, #f8f9fa);
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 8px;
+    margin: 16px 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.mcp-header {
+    background: var(--bg-primary, #ffffff);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color, #dee2e6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mcp-header .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    background: var(--accent-color, #007bff);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mcp-header .btn:hover {
+    background: var(--accent-color-hover, #0056b3);
+    transform: scale(1.05);
+}
+
+.mcp-header .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========== MCP SERVERS LIST ========== */
+.mcp-servers {
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.mcp-servers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mcp-server-card {
+    background: white;
+    border: 1px solid var(--border-light, #e9ecef);
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.mcp-server-card:hover {
+    border-color: var(--accent-color, #007bff);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mcp-server-card.connected {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(to right, #f8fff9 0%, white 20%);
+}
+
+.mcp-server-card.disconnected {
+    border-left: 4px solid #dc3545;
+    background: linear-gradient(to right, #fff8f8 0%, white 20%);
+}
+
+.mcp-server-card.disabled {
+    border-left: 4px solid #6c757d;
+    background: linear-gradient(to right, #f8f9fa 0%, white 20%);
+    opacity: 0.8;
+}
+
+.mcp-server-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.mcp-server-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary, #333);
+    font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.mcp-server-status {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mcp-server-description {
+    font-size: 11px;
+    color: var(--text-secondary, #666);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    min-height: 16px;
+}
+
+.mcp-server-details {
+    margin-bottom: 10px;
+}
+
+.mcp-server-details small {
+    font-size: 10px;
+    color: var(--text-muted, #888);
+    font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.mcp-server-details code {
+    background: var(--code-bg, #f1f3f4);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.mcp-server-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.mcp-server-actions .btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color, #dee2e6);
+    background: white;
+    color: var(--text-primary, #333);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mcp-toggle-btn:hover {
+    background: var(--accent-color, #007bff);
+    color: white;
+    border-color: var(--accent-color, #007bff);
+}
+
+.mcp-test-btn:hover {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+/* ========== MCP SUMMARY ========== */
+.mcp-summary {
+    background: var(--bg-light, #f8f9fa);
+    padding: 8px 16px;
+    border-top: 1px solid var(--border-color, #dee2e6);
+    text-align: center;
+}
+
+.mcp-summary small {
+    color: var(--text-secondary, #666);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ========== MCP STATES ========== */
+.mcp-loading, .mcp-error, .mcp-empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary, #666);
+}
+
+.mcp-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mcp-loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color, #dee2e6);
+    border-top: 2px solid var(--accent-color, #007bff);
+    border-radius: 50%;
+    animation: mcp-spin 1s linear infinite;
+}
+
+.mcp-error {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 4px;
+    margin: 8px;
+}
+
+.mcp-error p {
+    margin: 0 0 8px 0;
+    color: #c53030;
+    font-size: 12px;
+}
+
+.mcp-empty {
+    background: var(--bg-light, #f8f9fa);
+    border: 1px dashed var(--border-color, #dee2e6);
+    border-radius: 4px;
+    margin: 8px;
+}
+
+.mcp-empty p {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.mcp-empty small {
+    font-size: 10px;
+    color: var(--text-muted, #888);
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes mcp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .mcp-section {
+        margin: 8px 0;
+    }
+
+    .mcp-server-card {
+        padding: 8px;
+    }
+
+    .mcp-server-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .mcp-server-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+    .mcp-section {
+        background: var(--bg-secondary-dark, #1a1a1a);
+        border-color: var(--border-dark, #333);
+    }
+
+    .mcp-header {
+        background: var(--bg-primary-dark, #2d2d2d);
+        border-color: var(--border-dark, #333);
+    }
+
+    .mcp-header h3 {
+        color: var(--text-primary-dark, #fff);
+    }
+
+    .mcp-server-card {
+        background: var(--bg-primary-dark, #2d2d2d);
+        border-color: var(--border-dark, #333);
+    }
+
+    .mcp-server-card.connected {
+        background: linear-gradient(to right, #0f2f0f 0%, #2d2d2d 20%);
+    }
+
+    .mcp-server-card.disconnected {
+        background: linear-gradient(to right, #2f0f0f 0%, #2d2d2d 20%);
+    }
+
+    .mcp-server-name {
+        color: var(--text-primary-dark, #fff);
+    }
+
+    .mcp-server-description {
+        color: var(--text-secondary-dark, #ccc);
+    }
+
+    .mcp-server-details small {
+        color: var(--text-muted-dark, #999);
+    }
+
+    .mcp-server-details code {
+        background: var(--code-bg-dark, #333);
+        color: var(--text-primary-dark, #fff);
+    }
+
+    .mcp-server-actions .btn {
+        background: var(--bg-primary-dark, #2d2d2d);
+        color: var(--text-primary-dark, #fff);
+        border-color: var(--border-dark, #333);
+    }
+}
+
+/* ========== INTEGRATION WITH SIDEBAR ========== */
+.sidebar .mcp-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Adjust per esistenti sidebar layouts */
+.model-section + .mcp-section {
+    margin-top: 16px;
+}
+
+.mcp-section + .model-section {
+    margin-top: 16px;
+}
+
+/* ========== BADGE STYLES ========== */
+.mcp-server-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mcp-server-badge.connected {
+    background: #d4edda;
+    color: #155724;
+}
+
+.mcp-server-badge.disconnected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.mcp-server-badge.disabled {
+    background: #e2e3e5;
+    color: #495057;
+}
+
+/* ========== MCP CHAT INTEGRATION STYLES ========== */
+
+/* MCP Tools Container in Messages */
+.mcp-tools-container {
+    margin-top: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f4fd 100%);
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+}
+
+/* Individual Tool Indicator */
+.mcp-tool-indicator {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.mcp-tool-indicator:last-child {
+    margin-bottom: 0;
+}
+
+.mcp-tool-indicator.executing {
+    border-left: 3px solid #3b82f6;
+    animation: mcp-pulse 1.5s ease-in-out infinite;
+}
+
+.mcp-tool-indicator.success {
+    border-left: 3px solid #22c55e;
+    background: linear-gradient(to right, #f0fdf4 0%, white 30%);
+}
+
+.mcp-tool-indicator.error {
+    border-left: 3px solid #ef4444;
+    background: linear-gradient(to right, #fef2f2 0%, white 30%);
+}
+
+/* Tool Header */
+.tool-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.tool-icon {
+    font-size: 14px;
+}
+
+.tool-name {
+    font-weight: 600;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+    color: #1e293b;
+}
+
+.tool-status {
+    margin-left: auto;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.mcp-tool-indicator.executing .tool-status {
+    color: #3b82f6;
+}
+
+.mcp-tool-indicator.success .tool-status {
+    color: #22c55e;
+}
+
+.mcp-tool-indicator.error .tool-status {
+    color: #ef4444;
+}
+
+/* Tool Arguments */
+.tool-args {
+    margin-top: 8px;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.tool-args.collapsed {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+}
+
+.tool-args code {
+    display: block;
+    font-size: 11px;
+    color: #475569;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+}
+
+/* Tool Result */
+.tool-result {
+    margin-top: 8px;
+    padding: 8px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.tool-result.collapsed {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    border: none;
+}
+
+.result-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #166534;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.tool-result code {
+    display: block;
+    font-size: 11px;
+    color: #166534;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* MCP Badge for Messages */
+.mcp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.mcp-badge .badge-icon {
+    font-size: 12px;
+}
+
+.mcp-badge .badge-text {
+    font-weight: 600;
+}
+
+.mcp-badge .badge-info {
+    opacity: 0.9;
+    font-size: 10px;
+}
+
+/* MCP Pulse Animation */
+@keyframes mcp-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+}
+
+/* ========== DARK MODE FOR CHAT INTEGRATION ========== */
+@media (prefers-color-scheme: dark) {
+    .mcp-tools-container {
+        background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%);
+        border-color: #3730a3;
+    }
+
+    .mcp-tool-indicator {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    .mcp-tool-indicator.success {
+        background: linear-gradient(to right, #052e16 0%, #1e293b 30%);
+    }
+
+    .mcp-tool-indicator.error {
+        background: linear-gradient(to right, #450a0a 0%, #1e293b 30%);
+    }
+
+    .tool-name {
+        color: #f1f5f9;
+    }
+
+    .tool-status {
+        color: #94a3b8;
+    }
+
+    .tool-args {
+        background: #0f172a;
+    }
+
+    .tool-args code {
+        color: #cbd5e1;
+    }
+
+    .tool-result {
+        background: #052e16;
+        border-color: #166534;
+    }
+
+    .tool-result code {
+        color: #86efac;
+    }
+
+    .result-label {
+        color: #86efac;
+    }
+}

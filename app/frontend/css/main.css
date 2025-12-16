@@ -1,0 +1,58 @@
+/* ====================================================================
+   OLLAMAGUI CSS ORCHESTRATOR - Modular Architecture Entry Point
+   ====================================================================
+   
+   PURPOSE: Central import management per architettura CSS modulare
+   - Phoenix Transformation methodology implementation
+   - Zero-downtime migration da monolithic styles.css
+   - Order-dependent import sequence per dependency management
+   
+   ARCHITECTURE:
+   1. FOUNDATION: Core design tokens (required first)
+   2. LAYOUT: Structural layout systems  
+   3. COMPONENTS: UI component modules
+   4. UTILITIES: Helper classes and utilities
+   
+   METHODOLOGY: Analysis-first approach con zero functionality loss
+   SIZE TARGET: Orchestrator <50 lines, modules <200 lines each
+   MIGRATION STATUS: Phase 2 - Component Extraction (12/12 modules extracted) ✅ COMPLETE!
+   
+   LAST UPDATED: 2025-08-30 - Phase 2 CSS Refactoring COMPLETED!
+   ==================================================================== */
+
+/* ============================================================
+   PHASE 1: FOUNDATION (CRITICAL - LOAD FIRST)
+   ============================================================ */
+@import url('./core/design-tokens.css');
+
+/* ============================================================
+   PHASE 2: LAYOUT SYSTEMS (DEPENDENCY: Foundation)
+   ============================================================ */
+/* @import url('./layout/grid-system.css'); -- TODO: Phase 2 */
+@import url('./layout/main-layout.css');
+
+/* ============================================================
+   PHASE 3: COMPONENTS (DEPENDENCY: Foundation + Layout)
+   ============================================================ */
+@import url('./components/header-navigation.css');
+@import url('./components/buttons.css');
+@import url('./components/chat-interface.css');
+@import url('./components/modals.css');
+@import url('./components/sidebar-components.css');
+@import url('./components/status-indicators.css');
+@import url('./components/form-components.css');
+@import url('./components/animations-transitions.css');
+@import url('./components/mcp-components.css');
+
+/* ============================================================
+   PHASE 4: UTILITIES (DEPENDENCY: All above)
+   ============================================================ */
+@import url('./utils/responsive-utilities.css');
+@import url('./utils/accessibility-features.css');
+
+/* ============================================================
+   TEMPORARY: Legacy styles compatibility layer
+   During Phoenix Transformation, include remaining styles
+   from original styles.css until all modules are extracted
+   ============================================================ */
+@import url('./legacy-compatibility.css');

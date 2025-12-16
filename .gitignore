@@ -1,0 +1,93 @@
+# Dependencies
+node_modules/
+.npm-cache/
+package-lock.json
+
+# User Data (privacy-first - non tracciare dati utente)
+app/data/conversations/
+app/data/user-config.json
+app/data/ollama-config.json
+app/data/system-prompts.json
+
+# MCP Config (contiene path personalizzati e tokens)
+app/data/mcp-config.json
+
+# Legacy/test folders in data
+app/data/config/
+app/data/models/
+
+# Backup e file temporanei
+*.backup
+*.bak
+.cleanup-backup/
+*.tmp
+*.temp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE e Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Claude Code
+.claude/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Build outputs (se aggiunti in futuro)
+dist/
+build/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Certificates (se usati per HTTPS locale)
+*.pem
+*.key
+*.crt
+
+# Additional exclusions
+app/data/logs/
+app/data/cache/
+nul
+
+# ===========================================
+# DEVELOPMENT FILES (solo locali, non su GitHub)
+# ===========================================
+
+# Documentazione interna di sviluppo
+FUNZIONI.md
+REFACTORING_BASELINE.md
+VERIFIED_FEATURES_AUDIT.md
+PROJECT.md
+START_ISTRUZIONI.md
+
+# Claude Code workspace
+CLAUDE.md
+
+# File temporanei di sviluppo
+done.png

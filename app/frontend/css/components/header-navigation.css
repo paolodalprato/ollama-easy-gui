@@ -1,0 +1,263 @@
+/* ====================================================================
+   HEADER NAVIGATION COMPONENT - OllamaGUI Top Bar System  
+   ====================================================================
+   
+   PURPOSE: Complete header system con navigation e status indicators
+   - Main header layout con logo e status bar
+   - Real-time status indicators con animations
+   - Control buttons container
+   - Responsive behavior per mobile
+   
+   DEPENDENCIES: 
+   - css/core/design-tokens.css (CSS variables)
+   
+   COMPONENT PARTS:
+   1. Header Layout: Main header container con sticky positioning
+   2. Logo: Brand identity display
+   3. Status System: Connection status con visual indicators
+   4. Control Buttons: Action buttons container
+   5. Animations: Status dot animations (pulse, blinking)
+   
+   SIZE: 132 lines (COMPLIANT con <200 target)
+   EXTRACTED FROM: legacy-compatibility.css (header navigation section)
+   LAST UPDATED: 2025-08-29 - Phase 2 CSS Refactoring
+   ==================================================================== */
+
+/* ============================================================
+   HEADER LAYOUT SYSTEM
+   ============================================================ */
+
+.header {
+    background: var(--md-surface);
+    padding: var(--md-space-2) var(--md-space-4);
+    box-shadow: var(--md-elevation-1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Status bar aligned to the right */
+.status-bar {
+    margin-left: auto;
+}
+
+/* Header Left Container */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Logo Branding */
+.logo {
+    font-size: var(--md-title-large);
+    font-weight: 500;
+    color: var(--md-primary-700);
+}
+
+/* Sidebar Toggle Buttons */
+.sidebar-toggle {
+    background: #f8f9fa;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+}
+
+.sidebar-toggle.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.toggle-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* Status Bar Layout */
+.status-bar { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+}
+
+/* Control Buttons Container */
+.control-buttons { 
+    display: flex; 
+    gap: 10px; 
+}
+
+/* ============================================================
+   STATUS INDICATOR SYSTEM
+   ============================================================ */
+
+.status-indicator {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    padding: 8px 16px;
+    border-radius: 20px; 
+    font-size: 14px; 
+    font-weight: 500;
+    border: 2px solid #333;
+}
+
+/* Status Variants */
+.status-checking { 
+    background: #fff3cd; 
+    color: var(--md-on-surface); 
+}
+
+.status-connected { 
+    background: #d4edda; 
+    color: var(--md-on-surface); 
+}
+
+.status-disconnected {
+    background: #f8d7da;
+    color: var(--md-on-surface);
+}
+
+/* Web Search Indicator */
+.web-search-inactive {
+    background: #f8f9fa;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.web-search-inactive:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+}
+
+.web-search-active {
+    background: #d4edda;
+    color: #155724;
+    cursor: pointer;
+    border-color: #28a745;
+}
+
+.web-search-active:hover {
+    background: #c3e6cb;
+}
+
+.web-search-icon {
+    font-size: 16px;
+}
+
+/* ============================================================
+   STATUS DOT INDICATORS + ANIMATIONS
+   ============================================================ */
+
+.status-dot { 
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%; 
+    animation: pulse 2s infinite; 
+}
+
+/* Dot Color Variants */
+.dot-green { 
+    background: #28a745; 
+}
+
+.dot-red { 
+    background: #dc3545; 
+}
+
+.dot-yellow { 
+    background: #ffc107; 
+}
+
+/* Special Blinking State */
+.blinking { 
+    animation: blinkingRed 1s infinite !important; 
+}
+
+/* ============================================================
+   STATUS ANIMATIONS
+   ============================================================ */
+
+@keyframes pulse { 
+    0% { opacity: 1; } 
+    50% { opacity: 0.5; } 
+    100% { opacity: 1; } 
+}
+
+@keyframes blinkingRed { 
+    0% { opacity: 1; } 
+    50% { opacity: 0; } 
+    100% { opacity: 1; } 
+}
+
+/* ============================================================
+   ADDITIONAL STATUS COMPONENTS (for completeness)
+   ============================================================ */
+
+/* Status Detail Display (used in sidebar) */
+.status-detail { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 5px; 
+    font-size: 12px; 
+}
+
+/* Status Actions Container */
+.status-actions { 
+    margin-top: 15px; 
+    display: flex; 
+    gap: 10px; 
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN - MOBILE OPTIMIZATION
+   ============================================================ */
+
+/* Mobile Header Layout */
+@media (max-width: 768px) {
+    .header { 
+        padding: 10px 15px; 
+        flex-direction: column; 
+        gap: 10px; 
+    }
+    
+    .status-bar { 
+        flex-wrap: wrap; 
+    }
+    
+    .control-buttons { 
+        flex-wrap: wrap; 
+    }
+}
+
+/* Tablet Optimization */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .header {
+        padding: var(--md-space-2) var(--md-space-3);
+    }
+    
+    .logo {
+        font-size: var(--md-title-medium);
+    }
+}
+
+/* Large Screen Optimization */
+@media (min-width: 1440px) {
+    .header {
+        padding: var(--md-space-3) var(--md-space-6);
+    }
+}

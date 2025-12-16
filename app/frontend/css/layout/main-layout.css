@@ -1,0 +1,336 @@
+/* ====================================================================
+   MAIN LAYOUT SYSTEM - OllamaGUI Application Structure  
+   ====================================================================
+   
+   PURPOSE: Complete layout system for application structure
+   - Main content container with 3-column layout
+   - Sidebar systems (left and right) with flexible dimensions
+   - Chat container with responsive behavior
+   - Section titles with consistent styling
+   
+   DEPENDENCIES: 
+   - css/core/design-tokens.css (CSS variables)
+   
+   LAYOUT COMPONENTS:
+   1. Main Content: Central 3-column flex container
+   2. Sidebars: Left (280px) e Right (300px) con responsive behavior
+   3. Chat Container: Central area con scroll management
+   4. Section Titles: Consistent heading styling
+   5. Responsive Design: Mobile-first approach
+   
+   SIZE: 168 lines (COMPLIANT con <200 target)
+   EXTRACTED FROM: legacy-compatibility.css (main layout section)
+   LAST UPDATED: 2025-08-29 - Phase 2 CSS Refactoring
+   ==================================================================== */
+
+/* ============================================================
+   MAIN CONTENT LAYOUT SYSTEM
+   ============================================================ */
+
+.main-content {
+    flex: 1;
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    gap: var(--md-space-3);
+    padding: var(--md-space-3);
+    height: calc(100vh - 80px); /* Fixed height minus header */
+    overflow: hidden; /* Prevent main content from scrolling */
+    position: relative; /* For reopen sidebar buttons positioning */
+}
+
+/* ============================================================
+   SIDEBAR LAYOUT SYSTEM
+   ============================================================ */
+
+.sidebar-left,
+.sidebar-right {
+    width: 280px;
+    background: var(--md-surface);
+    border-radius: 12px;
+    padding: var(--md-space-3);
+    box-shadow: var(--md-elevation-1);
+    height: 100%; /* Full height of main-content */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent sidebar overflow */
+    transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    position: relative;
+}
+
+/* ============================================================
+   SIDEBAR COLLAPSE BUTTON
+   ============================================================ */
+
+.sidebar-collapse-btn {
+    width: 100%;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.sidebar-collapse-btn:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+}
+
+.sidebar-collapse-btn .collapse-icon {
+    font-size: 12px;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.sidebar-collapse-btn:hover .collapse-icon {
+    color: #667eea;
+}
+
+/* ============================================================
+   SIDEBAR REOPEN BUTTONS (visible when sidebar is hidden)
+   ============================================================ */
+
+.sidebar-reopen-btn {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 6px;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.sidebar-reopen-btn:hover {
+    background: #5a6fd6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.sidebar-reopen-btn span {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.reopen-left {
+    left: 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.reopen-right {
+    right: 0;
+    border-radius: 4px 0 0 4px;
+}
+
+/* Show reopen button when sidebar is hidden */
+.reopen-left.visible,
+.reopen-right.visible {
+    display: block;
+}
+
+/* Hidden sidebar states */
+.sidebar-left.hidden {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.sidebar-right.hidden {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+/* Right Sidebar Customization */
+.sidebar-right {
+    width: 300px;
+}
+
+/* Scrollable content wrapper for right sidebar */
+.sidebar-right-scroll {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+/* ============================================================
+   CHAT CONTAINER LAYOUT
+   ============================================================ */
+
+.chat-container {
+    flex: 1; 
+    background: var(--md-surface);
+    border-radius: 12px;
+    display: flex; 
+    flex-direction: column;
+    box-shadow: var(--md-elevation-1);
+    height: 100%; /* Full height of main-content */
+    overflow: hidden; /* Container itself doesn't scroll */
+    position: relative;
+}
+
+/* ============================================================
+   SECTION TITLE SYSTEM
+   ============================================================ */
+
+.section-title {
+    font-size: var(--md-title-medium); 
+    font-weight: 500; 
+    margin-bottom: var(--md-space-2); 
+    color: var(--md-on-surface);
+    border-bottom: 2px solid var(--md-primary-500); 
+    padding-bottom: var(--md-space-1);
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    flex-shrink: 0; /* Section titles don't shrink */
+}
+
+/* ============================================================
+   CONTENT AREA LAYOUT COMPONENTS
+   ============================================================ */
+
+/* Chat List Area */
+.chat-list { 
+    flex: 1; /* Take remaining space in sidebar */
+    overflow-y: auto; /* Independent scroll for chat list */
+    margin-bottom: 15px; /* Space before storage stats */
+}
+
+/* Storage Stats Display */
+.storage-stats {
+    background: #f8f9fa; 
+    padding: 12px; 
+    border-radius: 8px;
+    font-size: 12px;
+    margin-top: auto; /* Push to bottom of sidebar */
+    flex-shrink: 0; /* Don't shrink when space is limited */
+}
+
+.storage-stats-item {
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 4px;
+}
+
+/* Model Selector Area */
+.model-selector { 
+    margin-bottom: 20px;
+    flex-shrink: 0; /* Model selector doesn't shrink */
+}
+
+.model-selector select {
+    width: 100%; 
+    padding: 10px; 
+    border: 2px solid #e1e5e9;
+    border-radius: 8px; 
+    font-size: 14px; 
+    background: white;
+}
+
+/* Model Info Display */
+.model-info {
+    background: #f8f9fa; 
+    padding: 15px; 
+    border-radius: 8px;
+    margin-top: 10px; 
+    font-size: 12px; 
+    color: #666;
+    flex-shrink: 0; /* Model info doesn't shrink */
+}
+
+/* Ollama Status Display */
+.ollama-status { 
+    background: #f8f9fa; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+}
+
+/* Notifications Area */
+.notifications { 
+    flex: 1; /* Take remaining space in right sidebar */
+    overflow-y: auto; /* Independent scroll for notifications */
+    margin-top: 20px; 
+    max-height: 300px; /* Reasonable limit */
+}
+
+/* Scroll to Top Container */
+.scroll-to-top-container {
+    margin-top: auto; /* Push to bottom of sidebar */
+    padding-top: 15px;
+    border-top: 1px solid #e1e5e9;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN SYSTEM
+   ============================================================ */
+
+/* Large Screens (1200px+) */
+@media (min-width: 1200px) {
+    .main-content {
+        max-width: 1600px;
+        gap: var(--md-space-4);
+        padding: var(--md-space-4);
+    }
+}
+
+/* Medium Screens - Hide Right Sidebar */
+@media (max-width: 800px) {
+    .sidebar-right {
+        display: none;
+    }
+}
+
+/* Tablet Layout */
+@media (max-width: 768px) {
+    .main-content { 
+        flex-direction: column; 
+        padding: 10px; 
+        height: auto; /* Allow natural height on mobile */
+    }
+    
+    .sidebar-left { 
+        width: 100%; 
+        max-height: 300px; 
+    }
+    
+    .chat-container {
+        min-height: 400px; /* Ensure reasonable chat height */
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+    .main-content {
+        gap: var(--md-space-2);
+        padding: var(--md-space-2);
+    }
+    
+    .sidebar-left {
+        max-height: 250px;
+    }
+    
+    .section-title {
+        font-size: var(--md-body-large);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--md-space-1);
+    }
+}

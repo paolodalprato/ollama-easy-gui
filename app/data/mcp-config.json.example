@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/directory"
+      ],
+      "env": {},
+      "enabled": false,
+      "description": "File system operations - allows AI to read/write files in the specified directory"
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "your-github-token-here"
+      },
+      "enabled": false,
+      "description": "GitHub repository access - requires a Personal Access Token"
+    }
+  },
+  "globalSettings": {
+    "timeout": 30000,
+    "maxConcurrentServers": 5,
+    "enableLogging": true,
+    "logLevel": "info"
+  }
+}

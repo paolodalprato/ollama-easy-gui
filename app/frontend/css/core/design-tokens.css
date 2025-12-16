@@ -1,0 +1,86 @@
+/* ====================================================================
+   MATERIAL DESIGN 3 FOUNDATION VARIABLES - OllamaGUI Design System  
+   ====================================================================
+   
+   PURPOSE: Core design tokens per tutto il sistema UI
+   - CSS Variables per colori, spacing, typography, elevation
+   - Material Design 3 compliance system
+   - Foundation dependency per tutti gli altri moduli CSS
+   
+   USAGE:
+   - Imported per first in main.css 
+   - Variabili disponibili globally via CSS Variables
+   - Non modificare senza impact analysis complete
+   
+   SIZE: 64 lines (COMPLIANT con <200 target)
+   DEPENDENCIES: None (foundation module)
+   LAST UPDATED: 2025-08-29 - Extracted from monolithic styles.css
+   ==================================================================== */
+
+:root {
+  /* Primary Colors */
+  --md-primary-50: #e8f4fd;
+  --md-primary-100: #d1e9fb;
+  --md-primary-500: #2196f3;  /* Main primary */
+  --md-primary-700: #1976d2;
+  --md-primary-900: #0d47a1;
+
+  /* Secondary Colors */
+  --md-secondary-100: #f3e5f5;
+  --md-secondary-500: #9c27b0;  /* Main secondary */
+  --md-secondary-700: #7b1fa2;
+
+  /* Neutral Colors */
+  --md-surface: #fafafa;
+  --md-surface-variant: #f5f5f5;
+  --md-background: #ffffff;
+  --md-on-surface: #1c1b1f;
+  --md-on-surface-variant: #49454f;
+
+  /* Semantic Colors */
+  --md-success: #4caf50;
+  --md-success-light: #e8f5e8;
+  --md-warning: #ff9800;
+  --md-warning-light: #fff3e0;
+  --md-error: #f44336;
+  --md-error-light: #ffebee;
+
+  /* Elevation Shadows */
+  --md-elevation-1: 0px 1px 3px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.24);
+  --md-elevation-2: 0px 3px 6px rgba(0,0,0,0.16), 0px 3px 6px rgba(0,0,0,0.23);
+  --md-elevation-3: 0px 10px 20px rgba(0,0,0,0.19), 0px 6px 6px rgba(0,0,0,0.23);
+
+  /* 8dp Grid Spacing */
+  --md-space-1: 8px;   /* Base unit */
+  --md-space-2: 16px;  /* 2x */  
+  --md-space-3: 24px;  /* 3x */
+  --md-space-4: 32px;  /* 4x */
+  --md-space-5: 40px;  /* 5x */
+  --md-space-6: 48px;  /* 6x */
+
+  /* Typography Scale */
+  --md-title-large: 22px;
+  --md-title-medium: 16px;
+  --md-body-large: 16px;
+  --md-body-medium: 14px;
+  --md-label-large: 14px;
+  --md-label-medium: 12px;
+}
+
+/* Universal Reset & Foundation Styles */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+    background: var(--md-background);
+    color: var(--md-on-surface); 
+    min-height: 100vh; 
+    height: 100vh; /* Fixed viewport height */
+    display: flex; 
+    flex-direction: column;
+    overflow: hidden; /* Prevent body scroll */
+}

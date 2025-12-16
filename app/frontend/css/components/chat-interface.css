@@ -1,0 +1,523 @@
+/* ====================================================================
+   CHAT INTERFACE COMPONENT - OllamaGUI Core Messaging System  
+   ====================================================================
+   
+   PURPOSE: Complete chat interface system con messaging functionality
+   - Chat header con title editing capability
+   - Message display system (user, assistant, system messages)
+   - Chat input system con textarea resize e attachments
+   - Loading states, welcome message, download functionality
+   
+   DEPENDENCIES: 
+   - css/core/design-tokens.css (CSS variables)
+   
+   COMPONENT PARTS:
+   1. Chat Header: Title editing, chat management
+   2. Message System: Message display, content formatting, attachments
+   3. Input System: Textarea con resize, attachment handling
+   4. States: Loading, welcome, download menu
+   5. Interactive Elements: Drag & drop, file selection
+   
+   SIZE: 412 lines (ACCEPTABLE per core functionality complexity)
+   EXTRACTED FROM: legacy-compatibility.css (chat interface section)
+   LAST UPDATED: 2025-08-29 - Phase 2 CSS Refactoring
+   ==================================================================== */
+
+/* ============================================================
+   CHAT HEADER SYSTEM
+   ============================================================ */
+
+.chat-header {
+    background: #f8f9fa; 
+    padding: 10px 20px; 
+    border-bottom: 1px solid #e1e5e9;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    flex-shrink: 0; /* Header doesn't shrink */
+    z-index: 999;
+}
+
+.chat-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 6px 10px;
+    background: transparent;
+    cursor: text;
+    transition: all 0.2s ease;
+    min-width: 200px;
+    flex: 1;
+    max-width: calc(100% - 100px);
+    outline: none;
+}
+
+.chat-title:hover:not(.placeholder):not([readonly]) { 
+    border-color: #e1e5e9; 
+    background: #fff;
+}
+
+.chat-title:focus { 
+    border-color: #667eea; 
+    background: #fff; 
+}
+
+.chat-title.placeholder { 
+    font-style: italic; 
+    color: #999; 
+    cursor: default;
+}
+
+.chat-title[readonly] {
+    cursor: default;
+}
+
+.chat-title:not([readonly]):not(.placeholder) {
+    cursor: text;
+}
+
+.chat-title:not([readonly]):not(.placeholder):hover {
+    border-color: #667eea; 
+    background: rgba(102, 126, 234, 0.05);
+    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.1);
+}
+
+/* ============================================================
+   MESSAGES DISPLAY SYSTEM
+   ============================================================ */
+
+.chat-messages {
+    flex: 1; /* Take remaining space in chat container */
+    padding: 20px; 
+    overflow-y: auto; /* Independent scroll for messages */
+    background: #fafafa;
+    max-height: 100%; /* Respect container boundaries */
+}
+
+.message { 
+    margin-bottom: 20px; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.message.user { 
+    align-items: flex-end; 
+}
+
+.message.assistant { 
+    align-items: flex-start; 
+}
+
+.message.system { 
+    align-items: center; 
+}
+
+.message-content {
+    max-width: 80%; 
+    padding: 15px 20px; 
+    border-radius: 18px;
+    font-size: 14px; 
+    line-height: 1.5; 
+    word-wrap: break-word; 
+    white-space: pre-wrap;
+    border: 2px solid #333;
+}
+
+.message-content::after {
+    content: ""; 
+    display: table; 
+    clear: both; /* Clearfix per float button */
+}
+
+.message.user .message-content {
+    background: var(--md-primary-50);
+    color: var(--md-on-surface); 
+    border-bottom-right-radius: 4px;
+}
+
+.message.assistant .message-content {
+    background: var(--md-surface); 
+    color: var(--md-on-surface); 
+    border-bottom-left-radius: 4px;
+}
+
+.message.system .message-content {
+    background: var(--md-surface-variant); 
+    color: var(--md-on-surface);
+    font-style: italic; 
+    max-width: 60%; 
+    font-size: 13px;
+}
+
+.message-time { 
+    font-size: 11px; 
+    color: #666; 
+    margin-top: 5px; 
+    opacity: 0.7; 
+}
+
+/* ============================================================
+   CHAT LIST ITEMS (SIDEBAR)
+   ============================================================ */
+
+.chat-item {
+    background: var(--md-surface); 
+    border: 2px solid #333; 
+    border-radius: 8px;
+    padding: 12px; 
+    margin-bottom: 8px; 
+    cursor: pointer;
+    transition: all 0.2s ease; 
+    font-size: 13px;
+    color: var(--md-on-surface);
+}
+
+.chat-item:hover { 
+    background: var(--md-surface-variant); 
+    border-color: #333; 
+}
+
+.chat-item.active { 
+    background: var(--md-primary-50); 
+    color: var(--md-on-surface); 
+    border-color: #333; 
+}
+
+.chat-item-title {
+    font-weight: 600; 
+    margin-bottom: 4px;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.chat-item-meta {
+    font-size: 11px; 
+    opacity: 0.7;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+}
+
+/* ============================================================
+   DOWNLOAD MENU SYSTEM
+   ============================================================ */
+
+.download-menu {
+    position: fixed; 
+    background: white; 
+    border: 2px solid #e1e5e9; 
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    padding: 8px 0; 
+    z-index: 9999;
+    min-width: 120px; 
+    display: none;
+}
+
+.download-menu.show { 
+    display: block; 
+}
+
+.download-menu-item {
+    padding: 8px 16px; 
+    cursor: pointer; 
+    font-size: 13px; 
+    color: #333;
+    border: none; 
+    background: none; 
+    width: 100%; 
+    text-align: left;
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+}
+
+.download-menu-item:hover {
+    background: #f8f9fa; 
+    color: #667eea;
+}
+
+/* ============================================================
+   CHAT INPUT SYSTEM
+   ============================================================ */
+
+.chat-input-container { 
+    padding: 20px; 
+    background: white; 
+    border-top: 1px solid #e1e5e9;
+    flex-shrink: 0; /* Input area doesn't shrink */
+}
+
+.chat-input { 
+    display: flex; 
+    gap: 10px; 
+    align-items: flex-end; 
+}
+
+.input-wrapper { 
+    flex: 1; 
+    position: relative; 
+}
+
+.chat-input textarea {
+    width: 100%;
+    padding: 12px 50px 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    resize: none;
+    font-size: 14px;
+    font-family: inherit;
+    min-height: 112px;
+    max-height: 500px;
+    overflow-y: auto;
+    line-height: 1.4;
+    box-sizing: border-box;
+    /* Enable smooth resizing */
+    transition: height 0.15s ease-out;
+}
+
+.chat-input textarea:focus {
+    border-color: #667eea; 
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ============================================================
+   TEXTAREA RESIZE HANDLE SYSTEM
+   ============================================================ */
+
+.textarea-resize-handle {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    cursor: ns-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    transition: all 0.2s ease;
+    z-index: 10;
+    border-radius: 6px;
+    background-image: url('../../icon/maniglia.png');
+    background-size: 14px 14px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #fafafa;
+    border: 2px solid #000;
+    pointer-events: auto;
+    user-select: none;
+    transform-origin: center;
+}
+
+.textarea-resize-handle:hover {
+    color: #667eea; 
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.textarea-resize-handle:active {
+    background-color: rgba(102, 126, 234, 0.2);
+}
+
+/* Enhanced visual feedback during resize */
+.chat-input-container.resizing {
+    position: relative;
+}
+
+.chat-input-container.resizing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--md-primary-500);
+    animation: resizeIndicator 1s ease-in-out infinite alternate;
+}
+
+@keyframes resizeIndicator {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+.textarea-resize-handle::after {
+    content: '';
+    /* Remove the CSS lines if we use the icon */
+}
+
+/* ============================================================
+   ATTACHMENT SYSTEM
+   ============================================================ */
+
+.attachment-preview {
+    margin-top: 10px; 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+    max-height: 120px; 
+    overflow-y: auto;
+}
+
+.attachment-item {
+    background: #f8f9fa; 
+    border: 1px solid #e1e5e9; 
+    border-radius: 8px;
+    padding: 8px 12px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-size: 12px;
+}
+
+.message-attachments {
+    margin-top: 8px; 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px;
+}
+
+.message-attachment {
+    background: rgba(255, 255, 255, 0.9); 
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px; 
+    padding: 6px 10px; 
+    font-size: 11px; 
+    cursor: pointer;
+    transition: all 0.2s ease; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.message-attachment:hover { 
+    background: rgba(255, 255, 255, 1); 
+    transform: translateY(-1px); 
+}
+
+.message-attachment.image-attachment {
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.attachment-icon {
+    width: 16px; 
+    height: 16px; 
+    border-radius: 3px; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    font-size: 10px; 
+    color: white;
+}
+
+.icon-image { background: #28a745; }
+.icon-pdf { background: #dc3545; }
+.icon-document { background: #007bff; }
+.icon-other { background: #6c757d; }
+
+/* ============================================================
+   DRAG & DROP SYSTEM
+   ============================================================ */
+
+.drop-zone {
+    border: 2px dashed #e1e5e9; 
+    border-radius: 12px; 
+    padding: 20px;
+    text-align: center; 
+    color: #666; 
+    margin-bottom: 10px; 
+    transition: all 0.3s ease;
+}
+
+.drop-zone.dragover {
+    border-color: #667eea; 
+    background: rgba(102, 126, 234, 0.05); 
+    color: #667eea;
+}
+
+/* ============================================================
+   LOADING STATES & WELCOME MESSAGE
+   ============================================================ */
+
+.loading { 
+    display: none; 
+    align-items: center; 
+    gap: 10px; 
+    color: #666; 
+    font-size: 14px; 
+    padding: 10px 0; 
+}
+
+.loading.show { 
+    display: flex; 
+}
+
+.spinner {
+    width: 20px; 
+    height: 20px; 
+    border: 2px solid #f3f3f3; 
+    border-top: 2px solid #667eea;
+    border-radius: 50%; 
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+}
+
+.welcome-message { 
+    text-align: center; 
+    color: #666; 
+    font-style: italic; 
+    margin: 40px 20px; 
+}
+
+/* ============================================================
+   FILE INPUT SYSTEM
+   ============================================================ */
+
+.file-input {
+    display: none;
+}
+
+/* Hidden file inputs are handled by JavaScript */
+
+/* ============================================================
+   CHAT FOOTER LINKS
+   ============================================================ */
+
+.chat-footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #e1e5e9;
+    flex-shrink: 0;
+}
+
+.footer-link {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    color: #5a6fd6;
+    text-decoration: underline;
+}
+
+.footer-separator {
+    color: #ccc;
+    font-size: 12px;
+}

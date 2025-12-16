@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Easy GUI</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo" id="logoBtn" style="cursor: pointer;" title="About Ollama Easy GUI">Ollama Easy GUI</div>
+        <div class="status-bar">
+            <div id="statusIndicator" class="status-indicator status-checking">
+                <div class="status-dot dot-yellow"></div>
+                <span>Checking Ollama...</span>
+            </div>
+            <div id="webSearchIndicator" class="status-indicator web-search-inactive" title="Click to toggle Web Search">
+                <span class="web-search-icon">🌐</span>
+                <span>Web Search</span>
+            </div>
+            <div class="control-buttons">
+                <button id="startBtn" class="btn btn-primary" disabled>Start Ollama</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>Stop Ollama</button>
+                <button id="shutdownBtn" class="btn btn-danger">Close App</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Sidebar reopen buttons (visible only when sidebar hidden) -->
+        <button id="reopenLeftSidebar" class="sidebar-reopen-btn reopen-left" title="Open sidebar">
+            <span>▶</span>
+        </button>
+        <button id="reopenRightSidebar" class="sidebar-reopen-btn reopen-right" title="Open sidebar">
+            <span>◀</span>
+        </button>
+
+        <!-- Left Sidebar - Chat List -->
+        <div class="sidebar-left">
+            <button id="toggleLeftSidebar" class="sidebar-collapse-btn" title="Close sidebar">
+                <span class="collapse-icon">◀</span>
+            </button>
+            <div class="section-title">
+                Conversations
+                <button id="newChatBtn" class="btn btn-success">New</button>
+            </div>
+
+            <div id="chatList" class="chat-list">
+                <div class="welcome-message">
+                    <p>📝 Your conversations will appear here</p>
+                    <p><small>All saved locally for privacy</small></p>
+                </div>
+            </div>
+
+            <div id="storageStats" class="storage-stats">
+                <div class="storage-stats-item">
+                    <span>Total chats:</span>
+                    <span id="totalChats">0</span>
+                </div>
+                <div class="storage-stats-item">
+                    <span>Total messages:</span>
+                    <span id="totalMessages">0</span>
+                </div>
+                <div class="storage-stats-item">
+                    <span>Storage used:</span>
+                    <span id="totalSize">0 MB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <input type="text" id="currentChatTitle" class="chat-title placeholder"
+                       value="Select or create a conversation" readonly>
+                <button id="deleteChatBtn" class="delete-chat-btn" disabled title="Delete chat">Delete</button>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <div class="welcome-message">
+                    <h3>🎯 Ollama Easy GUI - Enhanced GUI for Ollama</h3>
+                    <p>Advanced interface for Ollama models with total privacy - everything stays on your computer.</p>
+                    <p><strong>Features:</strong></p>
+                    <ul style="text-align: left; margin: 20px auto; max-width: 400px;">
+                        <li>💾 Auto-save conversations</li>
+                        <li>🔒 Everything stored locally</li>
+                        <li>🗑️ Secure deletion of chats + attachments</li>
+                        <li>📊 Storage usage information</li>
+                    </ul>
+                    <div style="background: #e8f5e8; border: 2px solid #28a745; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
+                        <h4 style="color: #155724; margin: 0 0 10px 0;">
+                            ▶️ START A NEW CONVERSATION OR SELECT A SAVED ONE
+                        </h4>
+                        <p style="color: #155724; margin: 0; font-size: 14px;">
+                            📝 Use the "New" button or click on a saved conversation in the left column
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <span>The model is generating a response...</span>
+            </div>
+            
+            <!-- Old fake progress bar removed - now using realistic progress notifications -->
+            
+            <div class="chat-input-container">
+                <div id="dropZone" class="drop-zone" style="display: none;">
+                    📎 Drag files here to attach them to the conversation
+                </div>
+
+                <div id="attachmentPreview" class="attachment-preview"></div>
+
+                <div class="chat-input" id="chatInputArea" style="display: none;">
+                    <div class="input-wrapper">
+                        <textarea
+                            id="messageInput"
+                            placeholder="Type your message... (Shift+Enter for new line, Enter to send)"
+                            disabled
+                        ></textarea>
+                        <div id="textareaResizeHandle" class="textarea-resize-handle" title="Drag to resize"></div>
+                        <button id="stopStreamBtn" class="stop-stream-btn" title="Stop current operations">
+                            <img src="icon/stop.png" alt="Stop" />
+                        </button>
+                        <button id="attachBtn" class="attachment-btn" disabled title="Attach file"></button>
+                        <input type="file" id="fileInput" class="file-input" multiple
+                               accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.svg,.pdf,.doc,.docx,.txt,.csv,.xlsx,.md,.json,.js,.html,.css">
+                    </div>
+                    <button id="sendBtn" class="send-btn" disabled>Send</button>
+                </div>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="chat-footer-links">
+                <a href="#" id="creditsLink" class="footer-link">Credits</a>
+                <span class="footer-separator">|</span>
+                <a href="#" id="systemLogLink" class="footer-link">System Log</a>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Ollama Controls -->
+        <div class="sidebar-right">
+            <button id="toggleRightSidebar" class="sidebar-collapse-btn" title="Close sidebar">
+                <span class="collapse-icon">▶</span>
+            </button>
+            <div class="sidebar-right-scroll">
+                <div class="section-title">AI Model</div>
+                <div class="model-selector">
+                    <select id="modelSelect">
+                        <option value="">Loading models...</option>
+                    </select>
+                    <div id="modelInfo" class="model-info">
+                        Select a model to see details
+                    </div>
+                    <button id="manageModelsBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                        Manage Models
+                    </button>
+                </div>
+
+                <div class="section-title">Notifications</div>
+                <div id="notifications" class="notifications">
+                    <div class="notification">
+                        <strong>Ollama Actions</strong><br>
+                        Ollama notifications will appear here
+                    </div>
+                </div>
+
+                <!-- Scroll to Top Button -->
+                <div class="scroll-to-top-container">
+                    <button id="scrollToTopBtn" class="btn btn-primary scroll-to-top-btn" title="Scroll to top of chat">
+                        Back to Top
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Menu -->
+    <div id="downloadMenu" class="download-menu">
+        <button class="download-menu-item" data-format="markdown">
+            📝 Markdown (.md)
+        </button>
+        <button class="download-menu-item" data-format="txt">
+            📄 Text (.txt)
+        </button>
+        <button class="download-menu-item" data-format="docx">
+            📃 Word (.docx)
+        </button>
+    </div>
+
+    <!-- Floating Controls removed - duplicated functionality -->
+
+    <!-- Modals -->
+    <div id="newChatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📝 Create New Conversation</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newChatTitle">Conversation title:</label>
+                    <input type="text" id="newChatTitle" placeholder="E.g.: Medical consultation, Legal analysis...">
+                </div>
+                <div class="form-group">
+                    <label for="newChatModel">Default model:</label>
+                    <select id="newChatModel">
+                        <option value="">Use selected model</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelNewChat" class="btn btn-primary">Cancel</button>
+                <button id="confirmNewChat" class="btn btn-success">Create Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteChatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🗑️ Delete Conversation</div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this conversation?</p>
+                <p><strong id="deleteChatTitle"></strong></p>
+                <p><small style="color: #dc3545;">⚠️ This action is irreversible. All associated attachments will also be deleted.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelDelete" class="btn btn-primary">Cancel</button>
+                <button id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="systemDiagnosticsModal" class="modal">
+        <div class="modal-content diagnostics-modal">
+            <div class="modal-header">
+                Complete System Diagnostics
+                <button id="closeDiagnostics" class="close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="diagnostic-status">
+                    <div id="diagnosticCurrentStep" class="diagnostic-step running">
+                        Initializing diagnostics...
+                    </div>
+                </div>
+                <div class="diagnostic-results-container">
+                    <div class="diagnostic-results-header">📊 Results:</div>
+                    <div id="diagnosticResults" class="diagnostic-results">
+                        <!-- Results will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Management Modal (Step 5B) -->
+    <div id="modelManagementModal" class="modal">
+        <div class="modal-content model-management-modal">
+            <div class="modal-header">
+                Model Management
+                <button id="closeModelManagement" class="close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tab Navigation -->
+                <div class="model-tabs">
+                    <button class="model-tab active" data-tab="local">📦 Local Models</button>
+                    <button class="model-tab" data-tab="hub">🌐 Download from Hub</button>
+                </div>
+
+                <!-- Tab: Local Models -->
+                <div id="tab-local" class="model-tab-content active">
+                    <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span><strong>Installed Models:</strong></span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="localModelsSortBy" style="padding: 5px; border: 1px solid #e1e5e9; border-radius: 4px;">
+                                <option value="name">Alphabetical</option>
+                                <option value="category">By Category</option>
+                                <option value="size">By Size</option>
+                                <option value="date">By Date</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="localModelsList" class="local-models-list">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            Loading local models...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Hub Ollama Search -->
+                <div id="tab-hub" class="model-tab-content">
+                    <!-- Search Controls -->
+                    <div class="hub-search-controls">
+                        <input type="text" id="modelSearchInput" placeholder="Search models (e.g. llama, codellama, mistral...)" />
+                        <select id="modelCategorySelect">
+                            <option value="all">All categories</option>
+                            <option value="chat">💬 Chat</option>
+                            <option value="code">💻 Code</option>
+                            <option value="reasoning">🧠 Reasoning</option>
+                            <option value="multimodal">👁️ Multimodal</option>
+                            <option value="small">📦 Small (&lt;4GB)</option>
+                            <option value="large">🏋️ Large (&gt;30GB)</option>
+                        </select>
+                        <button id="searchModelsBtn" class="primary-btn">🔍 Search</button>
+                    </div>
+
+                    <!-- Download Progress -->
+                    <div id="downloadProgress" class="download-progress">
+                        <div class="download-info">
+                            <span id="downloadingModel">Preparing...</span>
+                            <span id="downloadPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="downloadProgressBar" class="progress-bar"></div>
+                        </div>
+                        <div id="downloadDetails" class="download-details">Initializing...</div>
+                    </div>
+
+                    <!-- Results Grid -->
+                    <div id="modelGrid" class="model-grid">
+                        <div style="text-align: center; color: #666; padding: 40px; grid-column: 1 / -1;">
+                            🔍 Use search to find models from Ollama Hub
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">About Ollama Easy GUI</div>
+            <div class="modal-body" style="text-align: center;">
+                <h2 style="margin: 0 0 10px 0; color: #333;">Ollama Easy GUI</h2>
+                <p style="color: #666; margin: 0 0 20px 0;">Easy GUI for Ollama</p>
+                <p style="font-size: 14px; color: #888;">Version 1.0.0</p>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e1e5e9;">
+
+                <div style="text-align: left; padding: 0 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">Credits</h4>
+                    <p style="margin: 5px 0; font-size: 14px;">
+                        <strong>Paolo Dalprato</strong><br>
+                        <span style="color: #666;">Project creator, architecture, development</span>
+                    </p>
+                    <p style="margin: 15px 0 5px 0; font-size: 14px;">
+                        <strong>Claude (Anthropic)</strong><br>
+                        <span style="color: #666;">AI pair programming via Claude Code</span>
+                    </p>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e1e5e9;">
+
+                <p style="margin: 5px 0; font-size: 14px;">
+                    <span style="color: #666;">Made with collaboration between human creativity and AI capability</span>
+                </p>
+
+                <div style="margin-top: 20px;">
+                    <a href="https://github.com/paolodalprato/ollama-easy-gui" target="_blank"
+                       style="color: #667eea; text-decoration: none; font-size: 14px;">
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn btn-primary" onclick="if(window.logViewer) window.logViewer.open(); document.getElementById('aboutModal').classList.remove('show');">
+                    System Log
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('aboutModal').classList.remove('show')">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Modular JavaScript Components -->
+    <script src="js/utils/DOMUtils.js"></script>
+    <script src="js/utils/FileUtils.js"></script>
+    <script src="js/utils/DragDropHandler.js"></script>
+    <script src="js/utils/TextareaResizeHandler.js"></script>
+    <script src="js/utils/NotificationSystem.js"></script>
+    <script src="js/utils/FileTextExtractor.js"></script>
+    <script src="js/services/ApiClient.js"></script>
+    <script src="js/services/StorageService.js"></script>
+    <!-- PHASE 3A.2: UI Managers -->
+    <script src="js/ui/AttachmentManager.js"></script>
+    <script src="js/ui/MessageStreamManager.js"></script>
+    <script src="js/components/ChatInterface.js"></script>
+    <script src="js/components/SearchInterface.js"></script>
+    <!-- ModelManager modular components (GUARDRAIL ARCHITECTURE compliance) -->
+    <script src="js/components/ModelSystemPrompts.js"></script>
+    <script src="js/components/ModelHubSearch.js"></script>
+    <script src="js/managers/LocalModelsManager.js"></script>
+    <script src="js/components/ModelManager.js"></script>
+    <script src="js/components/StatusIndicator.js"></script>
+    <script src="js/components/UnifiedFileSelector.js"></script>
+    <script src="js/components/MCPManager.js"></script>
+    <!-- PHASE 3A.1: New Managers -->
+    <script src="js/managers/ChatManager.js"></script>
+    <script src="js/managers/ModelManagerCoordinator.js"></script>
+    <!-- PHASE 3A.1.3: FileManager -->
+    <script src="js/managers/FileManager.js"></script>
+    <script src="js/components/LogViewer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

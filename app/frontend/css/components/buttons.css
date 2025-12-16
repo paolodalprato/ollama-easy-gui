@@ -1,0 +1,649 @@
+/* ====================================================================
+   BUTTON COMPONENT SYSTEM - OllamaGUI UI Kit  
+   ====================================================================
+   
+   PURPOSE: Complete button system con Material Design 3 compliance
+   - Base button class + variant modifiers
+   - Specialized button components (delete, download, attachment, etc.)
+   - Interactive states (hover, active, disabled)
+   - Consistent spacing, typography, animations
+   
+   DEPENDENCIES: 
+   - css/core/design-tokens.css (CSS variables)
+   
+   BUTTON CATEGORIES:
+   1. Base System: .btn + variants (.btn-primary, .btn-secondary, etc.)
+   2. Action Buttons: Specific UI actions (delete, download, etc.)
+   3. Icon Buttons: Small buttons with background images
+   4. Modal Buttons: Button variants specific to modals
+   
+   SIZE: 195 lines (COMPLIANT con <200 target)
+   EXTRACTED FROM: legacy-compatibility.css (41+ button classes)
+   LAST UPDATED: 2025-08-29 - Phase 2 CSS Refactoring
+   ==================================================================== */
+
+/* ============================================================
+   BASE BUTTON SYSTEM - Material Design 3 Compliant
+   ============================================================ */
+
+.btn {
+    padding: var(--md-space-1) var(--md-space-2); 
+    border: 2px solid #333; 
+    border-radius: 20px; 
+    cursor: pointer;
+    font-size: var(--md-label-large); 
+    font-weight: 500; 
+    transition: all 0.2s ease;
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+}
+
+/* Button Variants */
+.btn-primary { 
+    background: var(--md-primary-50); 
+    color: var(--md-on-surface); 
+}
+
+.btn-secondary { 
+    background: var(--md-surface-variant); 
+    color: var(--md-on-surface); 
+}
+
+.btn-success { 
+    background: var(--md-success-light); 
+    color: var(--md-on-surface); 
+}
+
+.btn-danger { 
+    background: var(--md-error-light); 
+    color: var(--md-on-surface); 
+}
+
+/* Button Interactive States */
+.btn:hover { 
+    border-color: #000; 
+    transform: translateY(-1px); 
+}
+
+.btn:disabled { 
+    opacity: 0.6; 
+    cursor: not-allowed; 
+    transform: none !important; 
+}
+
+/* Small Button Variant (for section titles) */
+.section-title .btn { 
+    padding: 4px 8px; 
+    font-size: 12px; 
+}
+
+/* ============================================================
+   ACTION BUTTONS - Specialized Components
+   ============================================================ */
+
+/* Send Button */
+.send-btn {
+    padding: 12px 20px; 
+    background: var(--md-primary-50);
+    color: var(--md-on-surface); 
+    border: 2px solid #333; 
+    border-radius: 12px; 
+    cursor: pointer;
+    font-size: 14px; 
+    font-weight: 500; 
+    min-width: 80px;
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-btn {
+    width: 100%;
+    justify-content: center;
+    background: var(--md-primary-50);
+    color: var(--md-on-surface);
+    border: 2px solid #333;
+    box-shadow: var(--md-elevation-1);
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.scroll-to-top-btn:hover {
+    background: var(--md-surface-variant);
+    transform: translateY(-2px);
+    box-shadow: var(--md-elevation-2);
+}
+
+/* Close Button (Modal/Dialog) */
+.close-btn {
+    background: var(--md-error-light); 
+    color: var(--md-on-surface); 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    width: 30px; 
+    height: 30px; 
+    font-size: 16px; 
+    cursor: pointer;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.close-btn:hover { 
+    background: var(--md-surface-variant); 
+    border-color: #000; 
+}
+
+/* ============================================================
+   ICON BUTTONS - Small buttons con background images
+   ============================================================ */
+
+/* Base Icon Button Style */
+.icon-btn-base {
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    padding: 4px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    width: 26px; 
+    height: 26px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background-repeat: no-repeat; 
+    background-position: center;
+    text-indent: -9999px; /* Hide text content */
+}
+
+.icon-btn-base:hover {
+    background-color: #f0f0f0; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+/* Delete Chat Button */
+.delete-chat-btn {
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #dc3545; 
+    border-radius: 6px;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    background-image: url('../../icon/delete.png');
+    background-size: 16px 16px; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    width: 32px; 
+    height: 32px; 
+    text-indent: -9999px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.delete-chat-btn:hover { 
+    background-color: #f0f0f0; 
+    border-color: #c82333; 
+    transform: scale(1.05);
+}
+
+.delete-chat-btn:disabled {
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    transform: none !important;
+}
+
+/* Download Response Button */
+.download-response-btn {
+    float: right; 
+    margin-left: 8px; 
+    padding: 6px; 
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px; 
+    cursor: pointer;
+    background-image: url('../../icon/download.png');
+    background-size: 14px 14px; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    width: 26px; 
+    height: 26px; 
+    transition: all 0.2s ease;
+    text-indent: -9999px;
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.download-response-btn:hover {
+    background-color: #5a6fd8; 
+    transform: translateY(-1px);
+}
+
+/* Attachment Button - REGOLA: ICONA = QUADRATO BORDO NERO SFONDO BIANCO */
+.attachment-btn {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: #fafafa !important;
+    color: #000000 !important;
+    border: 2px solid #000 !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 5;
+    background-image: url('../../icon/graffetta.png') !important;
+    background-size: 14px 14px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    width: 26px !important;
+    height: 26px !important;
+    text-indent: -9999px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+}
+
+.attachment-btn:hover { 
+    background-color: #f5f5f5 !important; 
+    border-color: #000000 !important; 
+    transform: scale(1.05);
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Stop Stream Button */
+.stop-stream-btn {
+    position: absolute;
+    right: 8px;
+    bottom: 43px;
+    background: var(--md-error, #f44336);
+    color: var(--md-on-error, #ffffff);
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 5;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stop-stream-btn img {
+    width: 14px; 
+    height: 14px; 
+    filter: brightness(0) invert(1);
+}
+
+.stop-stream-btn:hover { 
+    background-color: #b02a37; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+.stop-stream-btn:active {
+    background-color: #8b1e2b; 
+    transform: scale(0.98);
+}
+
+/* Web Search Button */
+.web-search-btn {
+    position: absolute; 
+    right: 42px; 
+    bottom: 8px;
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    padding: 4px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    z-index: 5;
+    width: 26px; 
+    height: 26px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 12px;
+}
+
+.web-search-btn::before {
+    content: '🌐'; 
+    font-size: 14px;
+}
+
+.web-search-btn:hover { 
+    background-color: #f0f0f0; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+/* Model Link Button */
+.model-link-btn {
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    padding: 4px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    background-image: url('../../icon/link.png');
+    background-size: 14px 14px; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    width: 26px; 
+    height: 26px; 
+    text-indent: -9999px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 12px;
+}
+
+.model-link-btn:hover {
+    background-color: #f0f0f0; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+/* System Prompt Button */
+.system-prompt-btn {
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    padding: 4px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    width: 26px; 
+    height: 26px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background-image: url('../../icon/text2.png');
+    background-size: 14px 14px; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    text-indent: -9999px;
+}
+
+.system-prompt-btn:hover {
+    background-color: #f0f0f0; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+/* Remove Button */
+.remove-btn {
+    background: #fafafa; 
+    color: #333; 
+    border: 2px solid #333; 
+    border-radius: 6px;
+    padding: 4px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    width: 26px; 
+    height: 26px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background-image: url('../../icon/delete.png');
+    background-size: 14px 14px; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    text-indent: -9999px;
+}
+
+.remove-btn:hover {
+    background-color: #f0f0f0; 
+    border-color: #000; 
+    transform: scale(1.05);
+}
+
+.remove-btn:disabled {
+    background: #6c757d; 
+    cursor: not-allowed; 
+    transform: none;
+}
+
+/* ============================================================
+   MODAL/SEARCH SPECIFIC BUTTONS
+   ============================================================ */
+
+/* Search Modal Buttons */
+.search-close-btn {
+    background: none; 
+    border: none; 
+    font-size: 24px; 
+    cursor: pointer; 
+    color: #666;
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    transition: all 0.2s ease;
+}
+
+.search-close-btn:hover {
+    background-color: #f0f0f0; 
+    color: #333;
+}
+
+.search-btn {
+    padding: 12px 20px; 
+    background: #0066cc; 
+    color: white; 
+    border: none;
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 14px; 
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.search-btn:hover {
+    background: #0052a3; 
+    transform: translateY(-1px);
+}
+
+.search-btn:disabled {
+    background: #ccc; 
+    cursor: not-allowed; 
+    transform: none;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 8px 16px; 
+    border: 2px solid #e1e5e9; 
+    border-radius: 6px;
+    background: #fff; 
+    cursor: pointer; 
+    font-size: 13px; 
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover:not(:disabled) {
+    border-color: #0066cc; 
+    color: #0066cc; 
+    transform: translateY(-1px);
+}
+
+.action-btn.primary {
+    background: #0066cc; 
+    color: white; 
+    border-color: #0066cc;
+}
+
+.action-btn.primary:hover:not(:disabled) {
+    background: #0052a3; 
+    border-color: #0052a3;
+}
+
+.action-btn:disabled {
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    transform: none;
+}
+
+/* Retry Button */
+.retry-btn {
+    margin-top: 10px; 
+    padding: 8px 16px; 
+    background: #0066cc; 
+    color: white;
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 13px;
+}
+
+.retry-btn:hover {
+    background: #0052a3;
+}
+
+/* Download Button (Model Management) */
+.download-btn {
+    background: #28a745; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px;
+    border-radius: 4px; 
+    font-size: 12px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    background-image: url('/icon/cloud_download.png');
+    background-size: 14px 14px; 
+    background-repeat: no-repeat; 
+    background-position: left 6px center;
+    padding-left: 24px;
+}
+
+.download-btn:hover {
+    background: #218838; 
+    transform: translateY(-1px);
+}
+
+.download-btn:disabled {
+    background: #6c757d; 
+    cursor: not-allowed; 
+    transform: none;
+}
+
+/* Enhanced File Button */
+.enhanced-file-btn {
+    background: white;
+    color: #495057;
+    border: 2px solid #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.enhanced-file-btn:hover {
+    background: #f8f9fa;
+    border-color: #495057;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.enhanced-file-btn:active {
+    transform: translateY(0);
+    background: #e9ecef;
+    border-color: #343a40;
+}
+
+.enhanced-file-btn img {
+    filter: brightness(0.7);
+    transition: filter 0.2s ease;
+}
+
+.enhanced-file-btn:hover img {
+    filter: brightness(0.5);
+}
+
+/* Insert Content Button */
+.insert-content-btn {
+    background: var(--md-success-light);
+    color: var(--md-on-surface);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.insert-content-btn:hover {
+    background: var(--md-success-light);
+    transform: translateY(-1px);
+    box-shadow: var(--md-elevation-2);
+}
+
+.insert-content-btn:active {
+    transform: translateY(0);
+}
+
+.insert-content-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================================
+   SYSTEM PROMPT MODAL BUTTONS
+   ============================================================ */
+
+.system-prompt-modal .btn {
+    padding: var(--md-space-1) var(--md-space-2);
+    border: 2px solid var(--md-outline, #79747e);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: var(--md-label-large, 14px);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--md-elevation-1, 0px 1px 3px rgba(0,0,0,0.12));
+}
+
+.system-prompt-modal .btn-secondary {
+    background: var(--md-surface-variant, #f3f2f7);
+    color: var(--md-on-surface, #1c1b1f);
+}
+
+.system-prompt-modal .btn-secondary:hover {
+    background: var(--md-surface, #ffffff);
+    border-color: var(--md-primary-500, #6750a4);
+    transform: translateY(-1px);
+    box-shadow: var(--md-elevation-2, 0px 3px 6px rgba(0,0,0,0.16));
+}
+
+.system-prompt-modal .btn-primary {
+    background: var(--md-primary-500, #6750a4);
+    color: var(--md-on-primary, #ffffff);
+}
+
+.system-prompt-modal .btn-primary:hover {
+    background: var(--md-primary-700, #1976d2);
+    transform: translateY(-1px);
+    box-shadow: var(--md-elevation-2, 0px 3px 6px rgba(0,0,0,0.16));
+}
