@@ -14,7 +14,7 @@ Chat Interface for Ollama AI Models - Local GUI, privacy-first.
 
 ### Key Features
 - **MCP Support**: Model Context Protocol integration for external tools
-- **Web Search**: Web search integrated in AI responses (DuckDuckGo)
+- **Global System Prompt**: Universal instructions applied to all models
 - **Hub Search**: Search and download models directly from GUI
 - **Material Design 3**: Clean and accessible UI
 - **Zero Dependencies**: Vanilla JS, no frameworks
@@ -40,7 +40,7 @@ Chat Interface for Ollama AI Models - Local GUI, privacy-first.
 | Material Design 3 UI | ✅ | 12 modular CSS modules |
 | Ollama auto-start | ✅ | Detection and lifecycle |
 | Hub Ollama Search | ✅ | Search and download models |
-| Web Search | ✅ | DuckDuckGo integration |
+| Global System Prompt | ✅ | Universal instructions for all models |
 | MCP Integration | ✅ | Full tool support |
 
 ### Current Performance
@@ -64,7 +64,6 @@ ollama-easy-gui/
 │   │   │   ├── OllamaController.js
 │   │   │   ├── AttachmentController.js
 │   │   │   ├── MCPController.js      # MCP API
-│   │   │   ├── WebSearchController.js # Web Search API
 │   │   │   ├── SystemPromptController.js
 │   │   │   ├── ProxyController.js
 │   │   │   └── HealthController.js
@@ -95,7 +94,6 @@ ollama-easy-gui/
 │   │       │   ├── ModelManager.js
 │   │       │   ├── ModelHubSearch.js   # Hub search UI
 │   │       │   ├── MCPManager.js       # MCP UI
-│   │       │   ├── SearchInterface.js  # Web search UI
 │   │       │   └── ...
 │   │       ├── managers/          # 4 managers
 │   │       ├── services/          # ApiClient, StorageService
@@ -118,7 +116,6 @@ ollama-easy-gui/
 | `server.js` | 411 | Entry point, routing |
 | `ChatController.js` | ~1000 | Chat CRUD, streaming |
 | `MCPController.js` | 305 | MCP API |
-| `WebSearchController.js` | 263 | Web search API |
 | `MCPClient.js` | 257 | MCP client |
 | `HubSearcher.js` | 376 | Hub search |
 
@@ -129,7 +126,6 @@ ollama-easy-gui/
 | `ChatInterface.js` | ~400 | Chat UI |
 | `ModelHubSearch.js` | 227 | Hub search UI |
 | `MCPManager.js` | 339 | MCP UI |
-| `SearchInterface.js` | 356 | Web search UI |
 
 ---
 
@@ -194,16 +190,6 @@ ollama-easy-gui/
     }]
   }
 }
-```
-
-### Web Search Pipeline
-```
-1. User: "What are the latest news about X?"
-2. SearchInterface.reformulateQuery() → "X latest news 2024"
-3. WebSearchController.search() → DuckDuckGo results
-4. SearchInterface.analyzeResults() → AI summary
-5. Include summary in Ollama context
-6. Ollama generates informed response
 ```
 
 ---

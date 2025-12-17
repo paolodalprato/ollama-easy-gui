@@ -128,8 +128,6 @@ class StatusIndicator {
         }
         if (sendBtn) sendBtn.disabled = !hasActiveChat;
         if (attachBtn) attachBtn.disabled = !hasActiveChat;
-        
-        // webSearchBtn removed - using SearchInterface toggle in sidebar
     }
 
     disableControls() {
@@ -145,8 +143,6 @@ class StatusIndicator {
         }
         if (sendBtn) sendBtn.disabled = true;
         if (attachBtn) attachBtn.disabled = true;
-        
-        // webSearchBtn removed - using SearchInterface toggle in sidebar
     }
 
     handleOllamaStatusChange(data) { 

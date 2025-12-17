@@ -307,32 +307,25 @@
     box-shadow: var(--md-elevation-1);
 }
 
-/* Attachment Remove Button */
+/* Attachment Remove Button - Red background for caution */
 .attachment-item .remove-btn {
-    background: var(--md-error-light); 
-    color: var(--md-on-surface); 
-    border: 2px solid #333; 
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #dc3545;
     border-radius: 6px;
-    width: 18px; 
-    height: 18px; 
-    font-size: 10px; 
-    cursor: pointer; 
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    cursor: pointer;
     display: flex;
-    align-items: center; 
+    align-items: center;
     justify-content: center;
-    
-    /* Material Design error button */
-    background: var(--md-error-container);
-    color: var(--md-on-error-container);
-    border-color: var(--md-outline);
-    
-    /* Interactive feedback */
     transition: all 0.2s ease;
 }
 
 .attachment-item .remove-btn:hover {
-    background: var(--md-error);
-    color: var(--md-on-error);
+    background: #dc3545;
+    color: #fff;
     transform: scale(1.1);
 }
 

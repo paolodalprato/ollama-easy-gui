@@ -7,7 +7,6 @@ const path = require('path');
 const ChatController = require('./controllers/ChatController');
 const ModelController = require('./controllers/ModelController');
 const OllamaController = require('./controllers/OllamaController');
-const WebSearchController = require('./controllers/WebSearchController');
 const MCPController = require('./controllers/MCPController');
 const LogController = require('./controllers/LogController');
 
@@ -27,7 +26,6 @@ const mcpController = new MCPController();
 const chatController = new ChatController(null, null, null, mcpController);
 const modelController = new ModelController();
 const ollamaController = new OllamaController(null, null, mcpController);
-const webSearchController = new WebSearchController();
 
 // Main managers for global functions
 const ollamaManager = new OllamaManager();
@@ -185,10 +183,6 @@ router.route('GET', '/events', (req, res) => {
     })}\n\n`);
 });
 
-// ========== WEB SEARCH ROUTES ==========
-router.route('POST', '/api/search/query', (req, res) => webSearchController.search(req, res));
-router.route('GET', '/api/search/status', (req, res) => webSearchController.getStatus(req, res));
-router.route('POST', '/api/search/clear-cache', (req, res) => webSearchController.clearCache(req, res));
 
 // ========== MCP ROUTES ==========
 router.route('GET', '/api/mcp/status', (req, res) => mcpController.getStatus(req, res));

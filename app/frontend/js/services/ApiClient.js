@@ -147,27 +147,6 @@ class ApiClient {
         return await response.json();
     }
 
-    // === WEB SEARCH API CALLS ===
-    
-    async performWebSearch(query, maxResults = 5) {
-        const response = await fetch('/api/search/query', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query, maxResults })
-        });
-        return await response.json();
-    }
-
-    async getSearchStatus() {
-        const response = await fetch('/api/search/status');
-        return await response.json();
-    }
-
-    async clearSearchCache() {
-        const response = await fetch('/api/search/clear-cache', { method: 'POST' });
-        return await response.json();
-    }
-
     // === SYSTEM API CALLS ===
     
     async shutdown() {

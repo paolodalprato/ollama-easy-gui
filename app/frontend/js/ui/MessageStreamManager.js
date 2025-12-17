@@ -1,14 +1,13 @@
 /**
  * MessageStreamManager - Real-time Message Streaming & Processing
- * 
+ *
  * Manages message sending, real-time streaming, processing indicators,
- * web search integration, and stream control functionality
+ * and stream control functionality
  * Extracted from ChatInterface.js for modular architecture compliance
- * 
+ *
  * Dependencies:
  * - ChatInterface: Parent component reference
  * - App: API client, notification system, model management
- * - SearchInterface: Web search integration
  */
 
 class MessageStreamManager {
@@ -22,14 +21,11 @@ class MessageStreamManager {
         this.currentProcessingIndicator = null;
         this.accumulatedContent = ''; // Accumulate streaming content
 
-        // Web search state for current message
-        this.currentWebSearchData = null;
-
         console.log('🌊 MessageStreamManager initialized');
     }
     
     /**
-     * Send message with streaming response and web search integration
+     * Send message with streaming response
      */
     async sendMessage() {
         const messageInput = document.getElementById('messageInput');
@@ -120,37 +116,9 @@ class MessageStreamManager {
                 await this.chatInterface.loadChatList(); // Update chat list
             }
             
-            // === WEB SEARCH INTEGRATION ===
+            // Message to send
             let finalMessage = message;
-            this.currentWebSearchData = null; // Reset for new message
 
-            if (this.app.searchInterface && this.app.searchInterface.isWebSearchActive()) {
-                this.updateProcessingIndicator(`🌐 Web search active - processing query...`);
-
-                try {
-                    const webSearchData = await this.app.searchInterface.processMessageWithWebSearch(message);
-
-                    if (webSearchData) {
-                        // Store web search data for later display
-                        this.currentWebSearchData = webSearchData;
-
-                        // Web search successful - append analysis report to message
-                        this.updateProcessingIndicator(`✅ Web search completed - preparing enhanced message...`);
-
-                        finalMessage = `${message}\n\n--- WEB SEARCH ANALYSIS ---\n${webSearchData.analysisReport}\n\n--- QUERY ORIGINALE ---\n"${message}"\n\n--- QUERY OTTIMIZZATA ---\n"${webSearchData.optimizedQuery}"\n\nRispondi utilizzando sia le tue conoscenze che le informazioni web search sopra.`;
-
-                        this.app.addNotification(`🌐 Web search completed - ${webSearchData.searchResults.length} results analyzed`, 'success');
-                    } else {
-                        this.updateProcessingIndicator(`⚠️ Web search failed - continuing with normal chat...`);
-                    }
-                } catch (error) {
-                    console.error('❌ Web search processing failed:', error);
-                    this.updateProcessingIndicator(`❌ Web search error - continuing with normal chat...`);
-                    this.app.addNotification(`⚠️ Web search error: ${error.message}`, 'warning');
-                    // Continue with original message
-                }
-            }
-            
             // Upload attachments if present
             const uploadedAttachments = [];
             if (this.chatInterface.pendingAttachments.length > 0) {
@@ -207,7 +175,7 @@ class MessageStreamManager {
 
             // Stop button always active - no need to enable/disable
 
-            // Start streaming (using finalMessage which may include web search data)
+            // Start streaming
             this.currentStreamController = this.app.apiClient.sendMessageStream(
                 finalMessage,
                 this.app.currentModel,
@@ -223,11 +191,6 @@ class MessageStreamManager {
                 (completeData) => {
                     console.log('✅ Streaming completed:', completeData);
                     this.finalizeStreamingMessage(streamingMessageElement);
-
-                    // Add web search sources if available
-                    if (this.currentWebSearchData && this.currentWebSearchData.searchResults) {
-                        this.appendWebSearchSources(streamingMessageElement, this.currentWebSearchData);
-                    }
 
                     // Add MCP badge if tools were used
                     if (completeData.toolsUsed || completeData.mcpIterations > 1) {
@@ -505,73 +468,6 @@ class MessageStreamManager {
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/`(.*?)`/g, '<code>$1</code>');
-    }
-
-    /**
-     * Append web search sources badge and links to a message element
-     * @param {Element} messageElement - The message DOM element
-     * @param {Object} webSearchData - Web search data with searchResults
-     */
-    appendWebSearchSources(messageElement, webSearchData) {
-        if (!messageElement || !webSearchData || !webSearchData.searchResults) return;
-
-        const sources = webSearchData.searchResults;
-        if (sources.length === 0) return;
-
-        // Create sources container
-        const sourcesContainer = document.createElement('div');
-        sourcesContainer.className = 'web-search-sources';
-
-        // Create badge
-        const badge = document.createElement('div');
-        badge.className = 'web-search-badge';
-        badge.innerHTML = `<span class="badge-icon">🌐</span> <span class="badge-text">Web Enhanced</span> <span class="badge-count">${sources.length} sources</span>`;
-
-        // Create collapsible sources list
-        const sourcesList = document.createElement('div');
-        sourcesList.className = 'sources-list collapsed';
-
-        sources.forEach((source, index) => {
-            const sourceItem = document.createElement('div');
-            sourceItem.className = 'source-item';
-
-            const url = source.url || '#';
-            const title = source.title || `Source ${index + 1}`;
-            const snippet = source.snippet || '';
-            const domain = source.source || (url !== '#' ? new URL(url).hostname : 'web');
-
-            sourceItem.innerHTML = `
-                <div class="source-header">
-                    <span class="source-number">${index + 1}.</span>
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="source-link" title="${title}">
-                        ${this.escapeHtml(title.length > 60 ? title.substring(0, 60) + '...' : title)}
-                    </a>
-                    <span class="source-domain">${this.escapeHtml(domain)}</span>
-                </div>
-                ${snippet ? `<div class="source-snippet">${this.escapeHtml(snippet.length > 150 ? snippet.substring(0, 150) + '...' : snippet)}</div>` : ''}
-            `;
-            sourcesList.appendChild(sourceItem);
-        });
-
-        // Add toggle functionality to badge
-        badge.style.cursor = 'pointer';
-        badge.addEventListener('click', () => {
-            sourcesList.classList.toggle('collapsed');
-            badge.classList.toggle('expanded');
-        });
-
-        sourcesContainer.appendChild(badge);
-        sourcesContainer.appendChild(sourcesList);
-
-        // Add to message element
-        const messageContent = messageElement.querySelector('.message-content');
-        if (messageContent) {
-            messageContent.appendChild(sourcesContainer);
-        } else {
-            messageElement.appendChild(sourcesContainer);
-        }
-
-        console.log(`🌐 Added ${sources.length} web search sources to message`);
     }
 
     /**

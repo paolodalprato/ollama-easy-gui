@@ -30,11 +30,11 @@ designed with a privacy-first approach where all data stays on your local machin
 - Enable/disable individual MCP servers from the interface
 - Explicit MCP toggle in sidebar - tools only sent to model when enabled
 
-#### Web Search Integration
-- DuckDuckGo-powered web search in conversations
-- Automatic query reformulation for better results
-- Source citations with clickable links
-- "Web Enhanced" badge on messages using search
+#### Global System Prompt
+- Universal instructions applied to ALL models
+- Accessible from the header "Global Prompt" button
+- Perfect for language preferences, response format, accuracy requirements
+- Combines seamlessly with per-model base prompts
 
 #### Ollama Hub Search
 - Search and download models directly from the GUI

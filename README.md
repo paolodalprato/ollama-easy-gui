@@ -1,6 +1,6 @@
 # Ollama Easy GUI
 
-**Easy GUI for Ollama** - Chat interface for an already existing Ollama installation, with MCP support, web search, and privacy-first design.
+**Easy GUI for Ollama** - Chat interface for an already existing Ollama installation, with MCP support, global system prompts, and privacy-first design.
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/paolodalprato/ollama-easy-gui)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -16,7 +16,7 @@
 ## Key Features
 
 - **MCP Tool Support** - Model Context Protocol integration for external tools
-- **Web Search** - Privacy-friendly search integrated in conversations
+- **Global System Prompt** - Universal instructions applied to all models
 - **Ollama Hub Search** - Browse and download models directly from the GUI
 - **Base Prompt per Model** - Persistent custom behavior for each model
 - **Attachments** - PDF, DOCX, images, and text files support
@@ -47,11 +47,11 @@ Connect your AI to external tools via MCP (Model Context Protocol):
 
 > **Note**: MCP requires models with **function calling** support. Compatible models include: `llama3.1`, `llama3.2`, `llama3.3`, `qwen2.5`, `mistral`, `command-r`, and others. See [MCP Model Compatibility](docs/documentation/MCP_MODEL_COMPATIBILITY.md) for the full list.
 
-### Web Search
-- **DuckDuckGo** powered - chosen for privacy (no tracking) and no API key required
-- Automatic query reformulation for better results
-- Source citations with clickable links
-- "Web Enhanced" badge on enriched responses
+### Global System Prompt
+- **Universal instructions** applied to ALL models before their specific prompts
+- Perfect for language preferences, response format, accuracy requirements
+- Accessible from the header "Global Prompt" button
+- Combines seamlessly with per-model base prompts
 
 ### Ollama Hub Search
 - Browse and download models from the **official Ollama model library**
@@ -65,7 +65,7 @@ Connect your AI to external tools via MCP (Model Context Protocol):
 - **No tracking** - Zero telemetry
 - **File-based storage** - Your conversations in simple JSON files
 
-> **Note on MCP and Privacy**: Some MCP servers act as bridges to external cloud services (e.g., GitHub API, NotebookLM, web search APIs). When using these, your queries and related context are sent to those external services - even if the MCP server itself runs locally on your machine. Only MCP servers that access purely local resources (e.g., filesystem, local databases) keep all data on your machine.
+> **Note on MCP and Privacy**: Some MCP servers act as bridges to external cloud services (e.g., GitHub API, NotebookLM). When using these, your queries and related context are sent to those external services - even if the MCP server itself runs locally on your machine. Only MCP servers that access purely local resources (e.g., filesystem, local databases) keep all data on your machine.
 
 ---
 
@@ -177,6 +177,11 @@ Define custom behavior for each model with persistent base prompts:
 
 ![Base Prompt](docs/images/Model%20base%20prompt.jpg)
 
+### Global System Prompt
+Set universal instructions that apply to ALL models - language preferences, accuracy requirements, response format:
+
+![Global System Prompt](docs/images/Global%20System%20Prompt.jpg)
+
 ### MCP Integration
 Connect to MCP servers for extended capabilities - filesystem, GitHub, search APIs. **MCP must be explicitly enabled** using the toggle switch in the right sidebar before tools are sent to the model:
 
@@ -204,10 +209,10 @@ Use MCP tools during conversations for file access, data queries, and more:
 
 > **Note**: MCP tools are available only when the main MCP toggle is ON.
 
-### Web Search
-1. Enable Web Search toggle in the right sidebar
-2. Ask questions that benefit from current information
-3. Sources appear below the response with clickable links
+### Global System Prompt
+1. Click the "Global Prompt" button in the header
+2. Enter universal instructions (e.g., "Always respond in Italian")
+3. These instructions apply to ALL models automatically
 
 ### Model Management
 1. Click "Manage Models" button

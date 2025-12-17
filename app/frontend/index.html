@@ -14,9 +14,9 @@
                 <div class="status-dot dot-yellow"></div>
                 <span>Checking Ollama...</span>
             </div>
-            <div id="webSearchIndicator" class="status-indicator web-search-inactive" title="Click to toggle Web Search">
-                <span class="web-search-icon">🌐</span>
-                <span>Web Search</span>
+            <div id="globalPromptIndicator" class="status-indicator" title="Manage Global System Prompt" style="cursor: pointer;">
+                <span class="global-prompt-icon">⚙️</span>
+                <span>Global Prompt</span>
             </div>
             <div class="control-buttons">
                 <button id="startBtn" class="btn btn-primary" disabled>Start Ollama</button>
@@ -325,6 +325,32 @@
         </div>
     </div>
 
+    <!-- Global System Prompt Modal -->
+    <div id="globalPromptModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                Global System Prompt
+                <button id="closeGlobalPromptModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                    This prompt is applied to <strong>ALL models</strong> before their specific prompt.
+                    Use it for universal instructions like response format, language preferences, or accuracy requirements.
+                </p>
+                <textarea id="globalPromptTextarea"
+                    style="width: 100%; min-height: 200px; padding: 12px; border: 1px solid #e1e5e9; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;"
+                    placeholder="Enter global instructions that apply to all models..."></textarea>
+                <div style="margin-top: 10px; color: #888; font-size: 12px;">
+                    <strong>Example:</strong> "Always respond in Italian. Be concise and accurate. Never invent information."
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelGlobalPrompt" class="btn btn-secondary">Cancel</button>
+                <button id="saveGlobalPrompt" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- About Modal -->
     <div id="aboutModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
@@ -385,7 +411,6 @@
     <script src="js/ui/AttachmentManager.js"></script>
     <script src="js/ui/MessageStreamManager.js"></script>
     <script src="js/components/ChatInterface.js"></script>
-    <script src="js/components/SearchInterface.js"></script>
     <!-- ModelManager modular components (GUARDRAIL ARCHITECTURE compliance) -->
     <script src="js/components/ModelSystemPrompts.js"></script>
     <script src="js/components/ModelHubSearch.js"></script>

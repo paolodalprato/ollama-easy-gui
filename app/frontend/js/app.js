@@ -18,7 +18,6 @@ class OllamaEasyGUIApp {
         
         // Initialize modular components
         this.chatInterface = new ChatInterface(this);
-        this.searchInterface = new SearchInterface(this);
         this.modelManager = new ModelManager(this);
         this.statusIndicator = new StatusIndicator(this);
         this.apiClient = new ApiClient();
@@ -45,7 +44,6 @@ class OllamaEasyGUIApp {
         
         // Set global references for onclick handlers
         window.chatInterface = this.chatInterface;
-        window.searchInterface = this.searchInterface;
         
         console.log('🚀 Ollama Easy GUI App initializing (Modular Architecture)...');
         
@@ -170,14 +168,11 @@ class OllamaEasyGUIApp {
             }
         });
 
-        // === WEB SEARCH TOGGLE IN HEADER ===
-        DOMUtils.addClickListener('webSearchIndicator', () => {
-            if (this.searchInterface) {
-                const newState = !this.searchInterface.isWebSearchEnabled;
-                this.searchInterface.toggleWebSearch(newState);
-                this.updateWebSearchIndicator(newState);
-            }
-        });
+        // === GLOBAL SYSTEM PROMPT ===
+        DOMUtils.addClickListener('globalPromptIndicator', () => this.openGlobalPromptModal());
+        DOMUtils.addClickListener('closeGlobalPromptModal', () => this.closeGlobalPromptModal());
+        DOMUtils.addClickListener('cancelGlobalPrompt', () => this.closeGlobalPromptModal());
+        DOMUtils.addClickListener('saveGlobalPrompt', () => this.saveGlobalPrompt());
 
         // === FIXED SCROLL TO TOP ===
         DOMUtils.addClickListener('scrollToTopBtn', () => this.statusIndicator.scrollToTop());
@@ -405,17 +400,64 @@ class OllamaEasyGUIApp {
         return this.notificationSystem.addNotification(message, type, duration);
     }
 
-    // === WEB SEARCH INDICATOR UPDATE ===
-    updateWebSearchIndicator(enabled) {
-        const indicator = document.getElementById('webSearchIndicator');
-        if (indicator) {
-            if (enabled) {
-                indicator.classList.remove('web-search-inactive');
-                indicator.classList.add('web-search-active');
+    // === GLOBAL SYSTEM PROMPT MANAGEMENT ===
+    async openGlobalPromptModal() {
+        const modal = document.getElementById('globalPromptModal');
+        const textarea = document.getElementById('globalPromptTextarea');
+
+        if (!modal || !textarea) return;
+
+        // Load current global prompt
+        try {
+            const response = await fetch('/api/system-prompts/list');
+            const data = await response.json();
+
+            if (data.success && data.prompts && data.prompts['_global']) {
+                textarea.value = data.prompts['_global'];
             } else {
-                indicator.classList.remove('web-search-active');
-                indicator.classList.add('web-search-inactive');
+                textarea.value = '';
             }
+        } catch (error) {
+            console.error('Error loading global prompt:', error);
+            textarea.value = '';
+        }
+
+        modal.classList.add('show');
+    }
+
+    closeGlobalPromptModal() {
+        const modal = document.getElementById('globalPromptModal');
+        if (modal) modal.classList.remove('show');
+    }
+
+    async saveGlobalPrompt() {
+        const textarea = document.getElementById('globalPromptTextarea');
+        if (!textarea) return;
+
+        const prompt = textarea.value.trim();
+
+        try {
+            const response = await fetch('/api/system-prompts/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    modelName: '_global',
+                    prompt: prompt
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.addNotification('Global system prompt saved', 'success');
+                this.invalidateSystemPromptsCache();
+                this.closeGlobalPromptModal();
+            } else {
+                this.addNotification('Failed to save global prompt: ' + (data.error || 'Unknown error'), 'error');
+            }
+        } catch (error) {
+            console.error('Error saving global prompt:', error);
+            this.addNotification('Error saving global prompt', 'error');
         }
     }
 

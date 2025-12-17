@@ -131,31 +131,20 @@
     color: var(--md-on-surface);
 }
 
-/* Web Search Indicator */
-.web-search-inactive {
+/* Global Prompt Indicator */
+#globalPromptIndicator {
     background: #f8f9fa;
     color: #666;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.web-search-inactive:hover {
+#globalPromptIndicator:hover {
     background: #e9ecef;
     border-color: #667eea;
 }
 
-.web-search-active {
-    background: #d4edda;
-    color: #155724;
-    cursor: pointer;
-    border-color: #28a745;
-}
-
-.web-search-active:hover {
-    background: #c3e6cb;
-}
-
-.web-search-icon {
+.global-prompt-icon {
     font-size: 16px;
 }
 

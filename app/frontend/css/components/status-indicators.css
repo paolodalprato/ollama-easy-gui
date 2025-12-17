@@ -285,59 +285,6 @@
 }
 
 /* ============================================================
-   WEB SEARCH TOGGLE STATES
-   ============================================================ */
-
-/* Base Web Search Toggle Container */
-.web-search-toggle-container {
-    background: #f8f9fa;
-    border: 2px solid #e1e5e9;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-    
-    /* Material Design base styling */
-    background: var(--md-surface);
-    border-color: var(--md-outline-variant);
-}
-
-/* Hover State */
-.web-search-toggle-container:hover {
-    border-color: #667eea;
-    background: #f0f4ff;
-    transform: translateY(-1px);
-    
-    /* Material Design hover */
-    border-color: var(--md-primary-500);
-    background: var(--md-primary-50);
-    box-shadow: var(--md-elevation-2);
-}
-
-/* Active Web Search Container */
-.web-search-toggle-container.active {
-    background: #e8f5e8;
-    border-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-    
-    /* Material Design active state */
-    background: var(--md-success-50, #e8f5e8);
-    border-color: var(--md-success);
-    box-shadow: 0 0 0 3px var(--md-success-20, rgba(40, 167, 69, 0.1));
-}
-
-/* Inactive Web Search Container */
-.web-search-toggle-container.inactive {
-    background: #f8f9fa;
-    border-color: #e1e5e9;
-    opacity: 0.8;
-    
-    /* Material Design inactive state */
-    background: var(--md-surface-variant);
-    border-color: var(--md-outline);
-}
-
-/* ============================================================
    STATUS INDICATOR ANIMATIONS
    ============================================================ */
 
@@ -434,12 +381,7 @@
         font-size: 11px;
         margin-top: 6px;
     }
-    
-    .web-search-toggle-container {
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-    
+
     .toggle-status {
         font-size: 11px;
         padding: 3px 6px;
@@ -462,11 +404,6 @@
     
     .download-progress {
         padding: 10px;
-    }
-    
-    .web-search-toggle-container {
-        padding: 10px;
-        border-radius: 8px;
     }
 }
 
@@ -512,8 +449,7 @@
         transition: none;
     }
     
-    .toggle-status,
-    .web-search-toggle-container {
+    .toggle-status {
         transition: none;
     }
     
@@ -521,12 +457,6 @@
         from { transform: rotate(0deg); }
         to { transform: rotate(0deg); }
     }
-}
-
-/* Focus Management for Interactive Status Elements */
-.web-search-toggle-container:focus-within {
-    outline: 2px solid var(--md-primary-500);
-    outline-offset: 2px;
 }
 
 /* Screen Reader Enhancements */
@@ -537,192 +467,6 @@
     width: 1px;
     height: 1px;
     overflow: hidden;
-}
-
-/* ============================================================
-   WEB SEARCH SOURCES DISPLAY (Badge + Collapsible Sources)
-   ============================================================ */
-
-/* Sources Container */
-.web-search-sources {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #e1e5e9;
-}
-
-/* Web Search Badge */
-.web-search-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-
-.web-search-badge:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.web-search-badge.expanded {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    border-radius: 12px 12px 0 0;
-}
-
-.web-search-badge .badge-icon {
-    font-size: 14px;
-}
-
-.web-search-badge .badge-text {
-    font-weight: 600;
-}
-
-.web-search-badge .badge-count {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-}
-
-/* Sources List (Collapsible) */
-.sources-list {
-    background: #f8f9fa;
-    border: 1px solid #e1e5e9;
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-    overflow: hidden;
-    max-height: 400px;
-    overflow-y: auto;
-    transition: all 0.3s ease;
-}
-
-.sources-list.collapsed {
-    max-height: 0;
-    border: none;
-    opacity: 0;
-}
-
-/* Source Item */
-.source-item {
-    padding: 10px 14px;
-    border-bottom: 1px solid #e9ecef;
-    transition: background 0.2s ease;
-}
-
-.source-item:last-child {
-    border-bottom: none;
-}
-
-.source-item:hover {
-    background: #e9ecef;
-}
-
-.source-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.source-number {
-    color: #667eea;
-    font-weight: 600;
-    font-size: 12px;
-    min-width: 20px;
-}
-
-.source-link {
-    color: #1976d2;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    flex: 1;
-    min-width: 200px;
-}
-
-.source-link:hover {
-    text-decoration: underline;
-    color: #1565c0;
-}
-
-.source-domain {
-    color: #6c757d;
-    font-size: 11px;
-    background: #e9ecef;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.source-snippet {
-    margin-top: 6px;
-    color: #495057;
-    font-size: 12px;
-    line-height: 1.5;
-    padding-left: 28px;
-}
-
-/* Material Design Theme Compatibility */
-@media (prefers-color-scheme: dark) {
-    .web-search-sources {
-        border-top-color: var(--md-outline-variant, #3c4043);
-    }
-
-    .sources-list {
-        background: var(--md-surface-variant, #2d2d2d);
-        border-color: var(--md-outline-variant, #3c4043);
-    }
-
-    .source-item {
-        border-bottom-color: var(--md-outline-variant, #3c4043);
-    }
-
-    .source-item:hover {
-        background: var(--md-surface-hover, #3c3c3c);
-    }
-
-    .source-link {
-        color: var(--md-primary-300, #90caf9);
-    }
-
-    .source-domain {
-        background: var(--md-surface-variant, #3c3c3c);
-        color: var(--md-on-surface-variant, #adb5bd);
-    }
-
-    .source-snippet {
-        color: var(--md-on-surface-variant, #adb5bd);
-    }
-}
-
-/* Responsive Adjustments */
-@media (max-width: 600px) {
-    .web-search-badge {
-        font-size: 11px;
-        padding: 5px 10px;
-    }
-
-    .source-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-
-    .source-link {
-        min-width: auto;
-        font-size: 12px;
-    }
-
-    .source-snippet {
-        padding-left: 0;
-        font-size: 11px;
-    }
 }
 
 /* ============================================================
