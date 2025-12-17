@@ -69,6 +69,58 @@ Connect your AI to external tools - just like Claude Desktop:
 
 ---
 
+## Installation
+
+### Prerequisites
+
+> **Important**: Ollama Easy GUI is an interface for Ollama. You must have **Ollama installed** on your system first.
+
+1. **Install Ollama** (required): Download from [https://ollama.ai](https://ollama.ai)
+2. **Install Git**: Download from [https://git-scm.com](https://git-scm.com)
+3. **Install Node.js** 16.0.0 or higher: Download from [https://nodejs.org](https://nodejs.org)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/paolodalprato/ollama-easy-gui.git
+
+# Navigate to directory
+cd ollama-easy-gui
+
+# Install dependencies (first time only)
+npm install
+
+# Start the application
+npm start
+```
+
+The GUI will open at `http://localhost:3003`
+
+### Windows: Using start-ollama-easy-gui.bat (Recommended)
+
+For Windows users, **double-click `start-ollama-easy-gui.bat`** instead of using `npm start`:
+- **Optional update check** - prompts to run `git pull` (auto-skips after 5 seconds)
+- Checks for Node.js installation
+- **Configures Ollama GPU/CPU settings** (layers, threads, cache)
+- Starts the server and opens the browser automatically
+
+![Update prompt on startup](docs/images/file%20bat%20update.jpg)
+
+You can edit the `.bat` file to customize performance settings for your hardware.
+
+> **Difference**: `npm start` just runs the server. The `.bat` file also offers update checking and configures Ollama environment variables for optimal GPU/CPU usage.
+
+### Updating
+
+To update to the latest version:
+```bash
+git pull
+npm install
+```
+
+---
+
 ## Screenshots Gallery
 
 ### Create New Conversation
@@ -121,55 +173,6 @@ Connect to MCP servers for extended capabilities - filesystem, GitHub, search AP
 Use MCP tools during conversations for file access, data queries, and more:
 
 ![MCP Query](docs/images/MCP%20query.jpg)
-
----
-
-## Installation
-
-### Prerequisites
-
-> **Important**: Ollama Easy GUI is an interface for Ollama. You must have **Ollama installed** on your system first.
-
-1. **Install Ollama** (required): Download from [https://ollama.ai](https://ollama.ai)
-2. **Install Node.js** 16.0.0 or higher: Download from [https://nodejs.org](https://nodejs.org)
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/paolodalprato/ollama-easy-gui.git
-
-# Navigate to directory
-cd ollama-easy-gui
-
-# Install dependencies (first time only)
-npm install
-
-# Start the application
-npm start
-```
-
-The GUI will open at `http://localhost:3003`
-
-### Windows: Using start-ollama-easy-gui.bat (Recommended)
-
-For Windows users, **double-click `start-ollama-easy-gui.bat`** instead of using `npm start`:
-- **Optional update check** - prompts to run `git pull` (auto-skips after 5 seconds)
-- Checks for Node.js installation
-- **Configures Ollama GPU/CPU settings** (layers, threads, cache)
-- Starts the server and opens the browser automatically
-
-You can edit the `.bat` file to customize performance settings for your hardware.
-
-> **Difference**: `npm start` just runs the server. The `.bat` file also offers update checking and configures Ollama environment variables for optimal GPU/CPU usage.
-
-### Updating
-
-To update to the latest version:
-```bash
-git pull
-npm install
-```
 
 ---
 
