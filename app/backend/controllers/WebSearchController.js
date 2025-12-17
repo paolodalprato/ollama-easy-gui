@@ -1,17 +1,19 @@
-// WebSearchController.js - Gestione ricerca web con DuckDuckGo
+// WebSearchController.js - Web search with DuckDuckGo HTML scraping
+// Uses html.duckduckgo.com for real search results (privacy-first, no API key required)
+
 const https = require('https');
 const { URL } = require('url');
 
 class WebSearchController {
     constructor() {
-        this.cache = new Map(); // Simple in-memory cache
-        this.rateLimitMap = new Map(); // Rate limiting per IP
+        this.cache = new Map();
+        this.rateLimitMap = new Map();
         this.maxCacheSize = 100;
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
         this.rateLimitWindow = 60 * 1000; // 1 minute
         this.maxRequestsPerWindow = 10;
-        
-        console.log('🌐 WebSearchController initialized with privacy-first DuckDuckGo');
+
+        console.log('🌐 WebSearchController initialized with DuckDuckGo HTML scraping');
     }
 
     // Main search endpoint
@@ -21,12 +23,12 @@ class WebSearchController {
         req.on('end', async () => {
             try {
                 const { query, maxResults = 5 } = JSON.parse(body);
-                
+
                 if (!query || query.trim().length === 0) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ 
-                        success: false, 
-                        error: 'Query is required' 
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Query is required'
                     }));
                     return;
                 }
@@ -35,9 +37,9 @@ class WebSearchController {
                 const clientIP = req.connection.remoteAddress || 'unknown';
                 if (!this.checkRateLimit(clientIP)) {
                     res.writeHead(429, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ 
-                        success: false, 
-                        error: 'Rate limit exceeded. Try again later.' 
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Rate limit exceeded. Try again later.'
                     }));
                     return;
                 }
@@ -45,7 +47,7 @@ class WebSearchController {
                 // Check cache first
                 const cacheKey = `${query.toLowerCase()}_${maxResults}`;
                 const cachedResult = this.getFromCache(cacheKey);
-                
+
                 if (cachedResult) {
                     console.log('🔍 Search cache hit for:', query);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -60,7 +62,7 @@ class WebSearchController {
 
                 console.log('🔍 Searching web for:', query);
                 const results = await this.performDuckDuckGoSearch(query, maxResults);
-                
+
                 // Cache successful results
                 if (results.length > 0) {
                     this.addToCache(cacheKey, results);
@@ -71,140 +73,258 @@ class WebSearchController {
                     success: true,
                     query,
                     results,
-                    cached: false
+                    cached: false,
+                    resultCount: results.length
                 }));
 
             } catch (error) {
                 console.error('❌ Search error:', error);
                 res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ 
-                    success: false, 
-                    error: 'Search failed: ' + error.message 
+                res.end(JSON.stringify({
+                    success: false,
+                    error: 'Search failed: ' + error.message
                 }));
             }
         });
     }
 
-    // Perform DuckDuckGo instant answer search
+    // Perform DuckDuckGo HTML search (real search results)
     async performDuckDuckGoSearch(query, maxResults) {
         return new Promise((resolve, reject) => {
             try {
-                // Use DuckDuckGo Instant Answer API (privacy-respecting)
-                const searchURL = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-                
-                const request = https.get(searchURL, { timeout: 10000 }, (response) => {
-                    let data = '';
-                    
-                    response.on('data', chunk => {
-                        data += chunk;
-                    });
-                    
-                    response.on('end', () => {
-                        try {
-                            const searchData = JSON.parse(data);
-                            const results = this.formatDuckDuckGoResults(searchData, maxResults);
-                            resolve(results);
-                        } catch (parseError) {
-                            console.error('❌ Failed to parse DuckDuckGo response:', parseError);
-                            reject(parseError);
-                        }
-                    });
+                // Use DuckDuckGo HTML version (lite, no JS) for scraping
+                const searchURL = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+
+                const options = {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.5',
+                        'Accept-Encoding': 'identity',
+                        'Connection': 'keep-alive'
+                    },
+                    timeout: 15000
+                };
+
+                const request = https.get(searchURL, options, (response) => {
+                    // Handle redirects
+                    if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                        console.log('🔄 Following redirect to:', response.headers.location);
+                        https.get(response.headers.location, options, (redirectResponse) => {
+                            this.handleSearchResponse(redirectResponse, maxResults, resolve, reject);
+                        }).on('error', reject);
+                        return;
+                    }
+
+                    this.handleSearchResponse(response, maxResults, resolve, reject);
                 });
-                
+
                 request.on('timeout', () => {
                     request.destroy();
                     reject(new Error('Search request timeout'));
                 });
-                
+
                 request.on('error', (error) => {
                     reject(error);
                 });
-                
+
             } catch (error) {
                 reject(error);
             }
         });
     }
 
-    // Format DuckDuckGo results into consistent structure
-    formatDuckDuckGoResults(data, maxResults) {
-        const results = [];
-        
-        // Add instant answer if available
-        if (data.Abstract && data.AbstractText) {
-            results.push({
-                title: data.Heading || 'Instant Answer',
-                url: data.AbstractURL || '',
-                snippet: data.AbstractText,
-                type: 'instant_answer',
-                source: data.AbstractSource || 'DuckDuckGo'
-            });
-        }
-        
-        // Add definition if available
-        if (data.Definition && data.DefinitionText) {
-            results.push({
-                title: 'Definition',
-                url: data.DefinitionURL || '',
-                snippet: data.DefinitionText,
-                type: 'definition',
-                source: data.DefinitionSource || 'Dictionary'
-            });
-        }
-        
-        // Add related topics
-        if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
-            for (let topic of data.RelatedTopics.slice(0, maxResults - results.length)) {
-                if (topic.FirstURL && topic.Text) {
-                    results.push({
-                        title: this.extractTitle(topic.Text),
-                        url: topic.FirstURL,
-                        snippet: topic.Text,
-                        type: 'related_topic',
-                        source: 'DuckDuckGo'
-                    });
-                }
+    // Handle the HTTP response and parse results
+    handleSearchResponse(response, maxResults, resolve, reject) {
+        let data = '';
+
+        response.on('data', chunk => {
+            data += chunk;
+        });
+
+        response.on('end', () => {
+            try {
+                const results = this.parseHTMLResults(data, maxResults);
+                console.log(`✅ Parsed ${results.length} search results`);
+                resolve(results);
+            } catch (parseError) {
+                console.error('❌ Failed to parse DuckDuckGo HTML:', parseError);
+                reject(parseError);
             }
-        }
-        
-        // Add infobox data if available
-        if (data.Infobox && data.Infobox.content) {
-            for (let item of data.Infobox.content.slice(0, 2)) {
-                if (item.data_type === 'string' && item.value) {
-                    results.push({
-                        title: item.label || 'Information',
-                        url: '',
-                        snippet: item.value,
-                        type: 'info',
-                        source: 'DuckDuckGo'
-                    });
-                }
-            }
-        }
-        
-        return results.slice(0, maxResults);
+        });
+
+        response.on('error', reject);
     }
 
-    // Extract title from text snippet
-    extractTitle(text) {
-        const parts = text.split(' - ');
-        return parts[0] || text.substring(0, 60) + '...';
+    // Parse DuckDuckGo HTML results
+    parseHTMLResults(html, maxResults) {
+        const results = [];
+
+        // DuckDuckGo HTML structure: results are in <div class="result"> or <div class="web-result">
+        // Each result contains:
+        // - <a class="result__a"> with href and title
+        // - <a class="result__snippet"> with description
+
+        // Pattern to match result blocks
+        const resultPattern = /<div[^>]*class="[^"]*result[^"]*"[^>]*>([\s\S]*?)<\/div>\s*(?=<div[^>]*class="[^"]*result|$)/gi;
+
+        // More specific patterns for extracting data
+        const linkPattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/i;
+        const snippetPattern = /<a[^>]*class="[^"]*result__snippet[^"]*"[^>]*>([\s\S]*?)<\/a>/i;
+        const urlPattern = /<span[^>]*class="[^"]*result__url[^"]*"[^>]*>([^<]*)<\/span>/i;
+
+        // Alternative pattern for result links (href in uddg parameter)
+        const uddgPattern = /uddg=([^&"]+)/i;
+
+        let match;
+        while ((match = resultPattern.exec(html)) !== null && results.length < maxResults) {
+            const resultBlock = match[1];
+
+            // Skip ads and non-organic results
+            if (resultBlock.includes('result--ad') || resultBlock.includes('sponsored')) {
+                continue;
+            }
+
+            // Extract link and title
+            const linkMatch = linkPattern.exec(resultBlock);
+            if (!linkMatch) continue;
+
+            let url = linkMatch[1];
+            let title = this.decodeHTMLEntities(linkMatch[2].trim());
+
+            // DuckDuckGo wraps URLs - extract actual URL from uddg parameter
+            if (url.includes('uddg=')) {
+                const uddgMatch = uddgPattern.exec(url);
+                if (uddgMatch) {
+                    url = decodeURIComponent(uddgMatch[1]);
+                }
+            }
+
+            // Skip if no valid URL
+            if (!url || url.startsWith('/') || !url.startsWith('http')) {
+                continue;
+            }
+
+            // Extract snippet
+            const snippetMatch = snippetPattern.exec(resultBlock);
+            let snippet = '';
+            if (snippetMatch) {
+                snippet = this.decodeHTMLEntities(
+                    snippetMatch[1]
+                        .replace(/<[^>]*>/g, '') // Remove HTML tags
+                        .replace(/\s+/g, ' ')    // Normalize whitespace
+                        .trim()
+                );
+            }
+
+            // Extract display URL
+            const urlMatch = urlPattern.exec(resultBlock);
+            const displayUrl = urlMatch ? this.decodeHTMLEntities(urlMatch[1].trim()) : this.extractDomain(url);
+
+            if (title && url && snippet) {
+                results.push({
+                    title: title,
+                    url: url,
+                    snippet: snippet,
+                    displayUrl: displayUrl,
+                    source: 'DuckDuckGo',
+                    type: 'web_result'
+                });
+            }
+        }
+
+        // If regex didn't work, try alternative parsing
+        if (results.length === 0) {
+            console.log('🔄 Trying alternative HTML parsing...');
+            return this.parseHTMLResultsAlternative(html, maxResults);
+        }
+
+        return results;
+    }
+
+    // Alternative parsing method for different HTML structures
+    parseHTMLResultsAlternative(html, maxResults) {
+        const results = [];
+
+        // Look for links with result data
+        // Pattern: <a rel="nofollow" class="result__a" href="...">Title</a>
+        const allLinksPattern = /<a[^>]*href="\/l\/\?uddg=([^"&]+)[^"]*"[^>]*>([^<]+)<\/a>/gi;
+        const snippetBlockPattern = /<td[^>]*class="[^"]*result-snippet[^"]*"[^>]*>([\s\S]*?)<\/td>/gi;
+
+        // Collect all snippets
+        const snippets = [];
+        let snippetMatch;
+        while ((snippetMatch = snippetBlockPattern.exec(html)) !== null) {
+            snippets.push(this.decodeHTMLEntities(
+                snippetMatch[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+            ));
+        }
+
+        // Match links with snippets
+        let linkMatch;
+        let index = 0;
+        while ((linkMatch = allLinksPattern.exec(html)) !== null && results.length < maxResults) {
+            const url = decodeURIComponent(linkMatch[1]);
+            const title = this.decodeHTMLEntities(linkMatch[2].trim());
+
+            if (url && url.startsWith('http') && title && title.length > 3) {
+                results.push({
+                    title: title,
+                    url: url,
+                    snippet: snippets[index] || 'No description available',
+                    displayUrl: this.extractDomain(url),
+                    source: 'DuckDuckGo',
+                    type: 'web_result'
+                });
+                index++;
+            }
+        }
+
+        return results;
+    }
+
+    // Decode HTML entities
+    decodeHTMLEntities(text) {
+        const entities = {
+            '&amp;': '&',
+            '&lt;': '<',
+            '&gt;': '>',
+            '&quot;': '"',
+            '&#39;': "'",
+            '&apos;': "'",
+            '&nbsp;': ' ',
+            '&#x27;': "'",
+            '&#x2F;': '/',
+            '&#x60;': '`',
+            '&#x3D;': '='
+        };
+
+        return text.replace(/&[#\w]+;/g, entity => entities[entity] || entity);
+    }
+
+    // Extract domain from URL
+    extractDomain(url) {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.hostname.replace('www.', '');
+        } catch {
+            return url.substring(0, 50);
+        }
     }
 
     // Rate limiting check
     checkRateLimit(clientIP) {
         const now = Date.now();
         const clientHistory = this.rateLimitMap.get(clientIP) || [];
-        
-        // Remove old entries outside the window
-        const validEntries = clientHistory.filter(timestamp => 
+
+        const validEntries = clientHistory.filter(timestamp =>
             now - timestamp < this.rateLimitWindow
         );
-        
+
         if (validEntries.length >= this.maxRequestsPerWindow) {
             return false;
         }
-        
+
         validEntries.push(now);
         this.rateLimitMap.set(clientIP, validEntries);
         return true;
@@ -221,12 +341,11 @@ class WebSearchController {
     }
 
     addToCache(key, data) {
-        // Simple LRU: if cache is full, remove oldest entry
         if (this.cache.size >= this.maxCacheSize) {
             const firstKey = this.cache.keys().next().value;
             this.cache.delete(firstKey);
         }
-        
+
         this.cache.set(key, {
             data,
             timestamp: Date.now()
@@ -237,9 +356,9 @@ class WebSearchController {
     async clearCache(req, res) {
         this.cache.clear();
         this.rateLimitMap.clear();
-        
+
         console.log('🗑️ Search cache cleared');
-        
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             success: true,
@@ -252,7 +371,8 @@ class WebSearchController {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             success: true,
-            provider: 'DuckDuckGo',
+            provider: 'DuckDuckGo HTML',
+            method: 'Web scraping (no API key required)',
             cache_size: this.cache.size,
             rate_limit_entries: this.rateLimitMap.size,
             privacy_first: true
