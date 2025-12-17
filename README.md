@@ -101,15 +101,17 @@ The GUI will open at `http://localhost:3003`
 
 ### Windows: Using start-ollama-easy-gui.bat (Recommended)
 
-For Windows users, **double-click `start-ollama-easy-gui.bat`** instead of using `npm start`:
-- **Optional update check** - prompts to run `git pull` (auto-skips after 5 seconds)
-- Checks for Node.js installation
-- **Configures Ollama GPU/CPU settings** (layers, threads, cache)
-- Starts the server and opens the browser automatically
+For Windows users, a batch file is provided for easier startup with GPU/CPU configuration.
 
-![Update prompt on startup](docs/images/file%20bat%20update.jpg)
+#### First-time Setup
 
-You can edit the `.bat` file to customize performance settings for your hardware:
+Copy the example file and customize it for your system:
+
+```cmd
+copy start-ollama-easy-gui.bat.example start-ollama-easy-gui.bat
+```
+
+Then edit `start-ollama-easy-gui.bat` to match your hardware:
 
 ```bat
 :: Adjust these values based on your GPU/CPU
@@ -121,6 +123,18 @@ set "OLLAMA_NUM_THREADS=24"         :: CPU threads for inference
 :: Uncomment and modify the path to match your system
 :: set "OLLAMA_CACHE_DIR=C:\your\custom\cache\path"
 ```
+
+#### Usage
+
+**Double-click `start-ollama-easy-gui.bat`** to start:
+- **Optional update check** - prompts to run `git pull` (auto-skips after 5 seconds)
+- Checks for Node.js installation
+- **Configures Ollama GPU/CPU settings** (layers, threads, cache)
+- Starts the server and opens the browser automatically
+
+![Update prompt on startup](docs/images/file%20bat%20update.jpg)
+
+> **Note**: Your personal `.bat` file is gitignored, so your settings won't be overwritten by `git pull`. The `.bat.example` file may be updated with new features - check it after updates.
 
 > **Difference**: `npm start` just runs the server. The `.bat` file also offers update checking and configures Ollama environment variables for optimal GPU/CPU usage.
 

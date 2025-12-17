@@ -78,6 +78,9 @@ app/data/logs/
 app/data/cache/
 nul
 
+# User startup script (contains personal paths and hardware config)
+start-ollama-easy-gui.bat
+
 # ===========================================
 # DEVELOPMENT FILES (solo locali, non su GitHub)
 # ===========================================
