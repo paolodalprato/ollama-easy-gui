@@ -22,16 +22,63 @@ class SystemPromptController {
 
     /**
      * Get system prompt for specific model
+     * Combines global prompt (applies to ALL models) + model-specific prompt
      * @param {string} modelName - Name of the model
-     * @returns {Promise<string>} System prompt content
+     * @returns {Promise<string>} Combined system prompt content
      */
     async getSystemPrompt(modelName) {
         try {
             const prompts = await this.loadSystemPrompts();
-            return prompts[modelName] || prompts['default'] || '';
+
+            // Get global prompt (applies to ALL models)
+            const globalPrompt = prompts['_global'] || '';
+
+            // Get model-specific prompt (or default if not set)
+            const modelPrompt = prompts[modelName] || prompts['default'] || '';
+
+            // Combine: global first, then model-specific
+            if (globalPrompt && modelPrompt) {
+                return `${globalPrompt}\n\n${modelPrompt}`;
+            } else if (globalPrompt) {
+                return globalPrompt;
+            } else {
+                return modelPrompt;
+            }
         } catch (error) {
             console.error('❌ Error getting system prompt:', error);
             return '';
+        }
+    }
+
+    /**
+     * Get global system prompt only
+     * @returns {Promise<string>} Global system prompt
+     */
+    async getGlobalPrompt() {
+        try {
+            const prompts = await this.loadSystemPrompts();
+            return prompts['_global'] || '';
+        } catch (error) {
+            console.error('❌ Error getting global prompt:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Save global system prompt
+     * @param {string} prompt - Global prompt content
+     * @returns {Promise<boolean>} Success status
+     */
+    async saveGlobalPrompt(prompt) {
+        try {
+            const prompts = await this.loadSystemPrompts();
+            prompts['_global'] = prompt;
+            await this.saveSystemPrompts(prompts);
+            console.log('✅ Global system prompt saved');
+            return true;
+        } catch (error) {
+            console.error('❌ Error saving global prompt:', error);
+            return false;
         }
     }
 
