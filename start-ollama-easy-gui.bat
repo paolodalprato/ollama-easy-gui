@@ -22,7 +22,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 set "OLLAMA_GPU_LAYERS=18"
 set "OLLAMA_FLASH_ATTENTION=1"
 set "OLLAMA_NUM_THREADS=24"
-set "OLLAMA_CACHE_DIR=D:\Ollama\Ollama_cache"
+:: set "OLLAMA_CACHE_DIR=C:\your\custom\cache\path"
 
 :: Optional (uncomment if needed):
 :: set "OLLAMA_LOW_VRAM=1"

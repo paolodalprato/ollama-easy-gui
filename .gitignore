@@ -1,3 +1,6 @@
+# Reserved/Private files (local development only)
+RESERVED/
+
 # Dependencies
 node_modules/
 .npm-cache/
