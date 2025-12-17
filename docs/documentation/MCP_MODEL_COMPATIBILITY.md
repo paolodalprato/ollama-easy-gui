@@ -1,152 +1,152 @@
 # MCP Model Compatibility Guide
 
-**OllamaGUI - Model Context Protocol Integration**
+**Ollama Easy GUI - Model Context Protocol Integration**
 
-Questa guida spiega quali modelli Ollama sono compatibili con la funzionalit MCP (Model Context Protocol) di OllamaGUI.
-
----
-
-## Requisiti per l'Uso di MCP
-
-### Cos' il Function Calling?
-
-Per utilizzare i tool MCP (filesystem, GitHub, search, ecc.), il modello AI deve supportare **"function calling"** (o "tool use"). Questa capacit permette al modello di:
-
-1. **Riconoscere** quando un tool esterno  necessario per rispondere
-2. **Generare** chiamate strutturate (JSON) con nome tool e parametri
-3. **Interpretare** i risultati restituiti dal tool
-4. **Continuare** la conversazione integrando le informazioni ottenute
-
-Non tutti i modelli Ollama hanno questa capacit - solo quelli addestrati specificamente per il function calling.
+This guide explains which Ollama models are compatible with MCP (Model Context Protocol) features.
 
 ---
 
-## Modelli Compatibili (Lista Completa)
+## Requirements for MCP Usage
 
-### Tier 1: Eccellente Supporto
+### What is Function Calling?
 
-| Modello | Dimensioni | VRAM Richiesta | Note |
-|---------|------------|----------------|------|
-| **llama3.1** | 8B, 70B, 405B | 6GB / 40GB / 200GB+ | Supporto nativo eccellente |
-| **llama3.3** | 70B | 40GB | Ultima versione, ottimizzato |
-| **qwen2.5** | 0.5B-72B | 1GB-45GB | Ottimo per multilingua |
-| **command-r-plus** | 104B | 65GB+ | Specializzato RAG e tools |
-| **hermes3** | 8B, 70B | 6GB / 40GB | Fine-tuned per function calling |
-| **firefunction-v2** | 70B | 40GB | Creato specificamente per tools |
+To use MCP tools (filesystem, GitHub, search, etc.), the AI model must support **"function calling"** (or "tool use"). This capability allows the model to:
 
-### Tier 2: Buon Supporto
+1. **Recognize** when an external tool is needed to respond
+2. **Generate** structured calls (JSON) with tool name and parameters
+3. **Interpret** the results returned by the tool
+4. **Continue** the conversation integrating the obtained information
 
-| Modello | Dimensioni | VRAM Richiesta | Note |
-|---------|------------|----------------|------|
-| **llama3.2** | 1B, 3B | 2GB / 3GB | Leggero ma capace |
-| **mistral** | 7B | 5GB | Veloce e affidabile |
-| **mistral-nemo** | 12B | 8GB | Bilanciato |
-| **mixtral** | 8x7B, 8x22B | 26GB / 85GB | MoE, ottimo rapporto |
-| **qwen2** | 0.5B-72B | 1GB-45GB | Versione precedente |
-| **command-r** | 35B | 22GB | Versione base |
+Not all Ollama models have this capability - only those specifically trained for function calling.
 
-### Tier 3: Supporto Base
+---
 
-| Modello | Dimensioni | VRAM Richiesta | Note |
-|---------|------------|----------------|------|
-| **qwen2.5-coder** | 1.5B-32B | 2GB-20GB | Specializzato codice |
-| **nemotron** | 70B | 40GB | NVIDIA, buone performance |
+## Compatible Models (Complete List)
+
+### Tier 1: Excellent Support
+
+| Model | Sizes | VRAM Required | Notes |
+|-------|-------|---------------|-------|
+| **llama3.1** | 8B, 70B, 405B | 6GB / 40GB / 200GB+ | Excellent native support |
+| **llama3.3** | 70B | 40GB | Latest version, optimized |
+| **qwen2.5** | 0.5B-72B | 1GB-45GB | Great for multilingual |
+| **command-r-plus** | 104B | 65GB+ | Specialized for RAG and tools |
+| **hermes3** | 8B, 70B | 6GB / 40GB | Fine-tuned for function calling |
+| **firefunction-v2** | 70B | 40GB | Created specifically for tools |
+
+### Tier 2: Good Support
+
+| Model | Sizes | VRAM Required | Notes |
+|-------|-------|---------------|-------|
+| **llama3.2** | 1B, 3B | 2GB / 3GB | Lightweight but capable |
+| **mistral** | 7B | 5GB | Fast and reliable |
+| **mistral-nemo** | 12B | 8GB | Balanced |
+| **mixtral** | 8x7B, 8x22B | 26GB / 85GB | MoE, great ratio |
+| **qwen2** | 0.5B-72B | 1GB-45GB | Previous version |
+| **command-r** | 35B | 22GB | Base version |
+
+### Tier 3: Basic Support
+
+| Model | Sizes | VRAM Required | Notes |
+|-------|-------|---------------|-------|
+| **qwen2.5-coder** | 1.5B-32B | 2GB-20GB | Code specialized |
+| **nemotron** | 70B | 40GB | NVIDIA, good performance |
 | **granite3-dense** | 2B, 8B | 2GB / 6GB | IBM, enterprise-ready |
-| **granite3-moe** | 1B, 3B | 1GB / 3GB | IBM MoE leggero |
-| **smollm2** | 135M-1.7B | <2GB | Ultraleggero |
+| **granite3-moe** | 1B, 3B | 1GB / 3GB | IBM MoE lightweight |
+| **smollm2** | 135M-1.7B | <2GB | Ultra-lightweight |
 
 ---
 
-## Modelli NON Compatibili
+## Incompatible Models
 
-I seguenti modelli **non supportano function calling** e **non funzioneranno con MCP**:
+The following models **do not support function calling** and **will not work with MCP**:
 
-| Modello | Motivo |
-|---------|--------|
-| `llama2` (tutte le varianti) | Architettura precedente senza tool support |
-| `codellama` | Specializzato solo per codice, no tools |
-| `phi` (v1, v2) | Modelli Microsoft senza tool training |
-| `phi3` | Versioni base senza function calling |
-| `gemma` (v1) | Google, prima generazione |
-| `vicuna` | Fine-tune di LLaMA1, obsoleto |
-| `orca` | Non addestrato per tools |
-| `tinyllama` | Troppo piccolo per tool use |
-| `deepseek-v1` | Versione precedente |
-| Modelli embedding | `nomic-embed`, `mxbai-embed`, ecc. |
-
----
-
-## Raccomandazioni per Caso d'Uso
-
-### Per Hardware Consumer (8-16GB VRAM)
-
-```
-Consigliato: llama3.1:8b o qwen2.5:7b
-- Ottimo equilibrio prestazioni/risorse
-- Supporto function calling affidabile
-- Velocit di risposta buona
-```
-
-### Per Hardware Limitato (4-8GB VRAM)
-
-```
-Consigliato: llama3.2:3b o qwen2.5:3b
-- Funziona anche con GPU entry-level
-- Supporto tools base ma funzionale
-- Ideale per test e sviluppo
-```
-
-### Per Hardware Enterprise (32GB+ VRAM)
-
-```
-Consigliato: llama3.3:70b o command-r-plus
-- Massima qualit nelle risposte
-- Eccellente comprensione contesto
-- Tool use sofisticato
-```
-
-### Per Task Specifici
-
-| Task | Modello Consigliato |
-|------|---------------------|
-| Coding con MCP filesystem | `qwen2.5-coder:7b` |
-| Ricerca documenti | `command-r:35b` |
-| Multilingua | `qwen2.5:7b` |
-| Velocit massima | `llama3.2:3b` |
-| Qualit massima | `llama3.3:70b` |
+| Model | Reason |
+|-------|--------|
+| `llama2` (all variants) | Previous architecture without tool support |
+| `codellama` | Specialized only for code, no tools |
+| `phi` (v1, v2) | Microsoft models without tool training |
+| `phi3` | Base versions without function calling |
+| `gemma` (v1) | Google, first generation |
+| `vicuna` | LLaMA1 fine-tune, obsolete |
+| `orca` | Not trained for tools |
+| `tinyllama` | Too small for tool use |
+| `deepseek-v1` | Previous version |
+| Embedding models | `nomic-embed`, `mxbai-embed`, etc. |
 
 ---
 
-## Come Verificare la Compatibilit
+## Recommendations by Use Case
 
-### Metodo 1: Verifica Template
+### For Consumer Hardware (8-16GB VRAM)
+
+```
+Recommended: llama3.1:8b or qwen2.5:7b
+- Great balance of performance/resources
+- Reliable function calling support
+- Good response speed
+```
+
+### For Limited Hardware (4-8GB VRAM)
+
+```
+Recommended: llama3.2:3b or qwen2.5:3b
+- Works with entry-level GPUs
+- Basic but functional tool support
+- Ideal for testing and development
+```
+
+### For Enterprise Hardware (32GB+ VRAM)
+
+```
+Recommended: llama3.3:70b or command-r-plus
+- Maximum response quality
+- Excellent context understanding
+- Sophisticated tool use
+```
+
+### For Specific Tasks
+
+| Task | Recommended Model |
+|------|-------------------|
+| Coding with MCP filesystem | `qwen2.5-coder:7b` |
+| Document search | `command-r:35b` |
+| Multilingual | `qwen2.5:7b` |
+| Maximum speed | `llama3.2:3b` |
+| Maximum quality | `llama3.3:70b` |
+
+---
+
+## How to Verify Compatibility
+
+### Method 1: Check Template
 
 ```bash
 ollama show <model-name> --modelfile
 ```
 
-Cerca nel template riferimenti a:
+Look for references to:
 - `tools`
 - `tool_call`
 - `function`
-- `<|tool|>` o simili token speciali
+- `<|tool|>` or similar special tokens
 
-### Metodo 2: Test Pratico
+### Method 2: Practical Test
 
-1. Abilita MCP in OllamaGUI
-2. Seleziona il modello da testare
-3. Chiedi: "Leggi il contenuto del file C:/test.txt" (con filesystem server attivo)
-4. Se il modello genera una tool call, supporta function calling
+1. Enable MCP in Ollama Easy GUI
+2. Select the model to test
+3. Ask: "Read the content of file C:/test.txt" (with filesystem server active)
+4. If the model generates a tool call, it supports function calling
 
-### Metodo 3: Documentazione Ollama
+### Method 3: Ollama Documentation
 
-Visita la pagina del modello su [ollama.ai/library](https://ollama.ai/library) e verifica se menziona "function calling" o "tool use" nelle capabilities.
+Visit the model page on [ollama.ai/library](https://ollama.ai/library) and check if it mentions "function calling" or "tool use" in the capabilities.
 
 ---
 
-## Configurazione MCP in OllamaGUI
+## MCP Configuration in Ollama Easy GUI
 
-### File di Configurazione
+### Configuration File
 
 `app/data/mcp-config.json`:
 
@@ -168,50 +168,50 @@ Visita la pagina del modello su [ollama.ai/library](https://ollama.ai/library) e
 }
 ```
 
-### Abilitare MCP nell'Interfaccia
+### Enabling MCP in the Interface
 
-1. Apri OllamaGUI
-2. Clicca sull'icona ingranaggio nella sidebar destra
-3. Nella sezione MCP, abilita i server desiderati con il toggle
-4. Seleziona un modello compatibile dalla dropdown
-5. Inizia a chattare - il modello user i tool quando necessario
+1. Open Ollama Easy GUI
+2. Click the gear icon in the right sidebar
+3. In the MCP section, enable desired servers with the toggle
+4. Select a compatible model from the dropdown
+5. Start chatting - the model will use tools when needed
 
-### Indicatori Visivi
+### Visual Indicators
 
-Durante la chat con MCP attivo vedrai:
-- Badge "MCP Enhanced" sui messaggi che usano tools
-- Indicatore "Executing tool..." durante l'esecuzione
-- Risultato del tool con stato (success/error)
+During chat with MCP enabled you'll see:
+- "MCP Enhanced" badge on messages using tools
+- "Executing tool..." indicator during execution
+- Tool result with status (success/error)
 
 ---
 
 ## Troubleshooting
 
-### "Il modello non usa i tool MCP"
+### "Model doesn't use MCP tools"
 
-1. **Verifica compatibilit**: Il modello supporta function calling?
-2. **Verifica configurazione**: I server MCP sono abilitati e connessi?
-3. **Verifica prompt**: Prova un prompt pi esplicito come "Usa il tool filesystem per leggere..."
+1. **Verify compatibility**: Does the model support function calling?
+2. **Verify configuration**: Are MCP servers enabled and connected?
+3. **Verify prompt**: Try a more explicit prompt like "Use the filesystem tool to read..."
 
-### "Tool call fallisce"
+### "Tool call fails"
 
-1. **Verifica server MCP**: Il server  avviato correttamente?
-2. **Verifica permessi**: Il server ha accesso alle risorse richieste?
-3. **Verifica API keys**: Per server come GitHub, le credenziali sono configurate?
+1. **Verify MCP server**: Is the server started correctly?
+2. **Verify permissions**: Does the server have access to requested resources?
+3. **Verify API keys**: For servers like GitHub, are credentials configured?
 
-### "Risposta lenta con MCP"
+### "Slow response with MCP"
 
-I modelli pi piccoli potrebbero impiegare pi tempo per generare tool calls corrette. Considera l'uso di un modello pi grande o disabilita MCP per conversazioni che non richiedono tools.
+Smaller models may take longer to generate correct tool calls. Consider using a larger model or disable MCP for conversations that don't require tools.
 
 ---
 
-## Risorse Aggiuntive
+## Additional Resources
 
 - [Ollama Function Calling Documentation](https://ollama.ai/blog/tool-support)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
-- [Lista Server MCP Disponibili](https://github.com/modelcontextprotocol/servers)
+- [Available MCP Servers List](https://github.com/modelcontextprotocol/servers)
 
 ---
 
-*Ultimo aggiornamento: 13 Dicembre 2025*
-*OllamaGUI v1.0.0*
+*Last updated: December 2025*
+*Ollama Easy GUI v1.0.0*
