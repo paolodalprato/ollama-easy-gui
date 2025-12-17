@@ -8,10 +8,6 @@
     "start:production": "NODE_ENV=production node app/backend/server.js",
     "start:development": "NODE_ENV=development node app/backend/server.js",
     "start:testing": "NODE_ENV=testing node app/backend/server.js",
-    "test": "node tests/diagnostic_test_suite.js",
-    "test:api": "node tests/api_test_suite.js",
-    "test:performance": "node tests/performance_test_suite.js",
-    "lint": "echo 'Linting not configured - consider adding ESLint'",
     "validate": "node app/backend/config/ProductionConfig.js --validate",
     "health-check": "curl -f http://localhost:3003/api/health || exit 1",
     "dev": "npm run start:development",
@@ -80,15 +76,12 @@
   },
   "directories": {
     "lib": "app",
-    "test": "tests",
     "doc": "docs"
   },
   "files": [
     "app/",
     "docs/",
-    "tests/",
     "README.md",
-    "CONTRIBUTING.md",
     "LICENSE",
     "package.json"
   ]

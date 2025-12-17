@@ -105,7 +105,6 @@ ollama-easy-gui/
 │       ├── mcp-config.json        # MCP config
 │       └── *.json                 # Other configs
 ├── docs/                          # Documentation
-├── tests/                         # Test suite
 └── *.bat                          # Startup scripts
 ```
 

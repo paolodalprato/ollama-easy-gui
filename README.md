@@ -323,8 +323,7 @@ ollama-easy-gui/
 │   │   ├── css/                # 15 modular CSS files
 │   │   └── js/                 # Components, managers, services
 │   └── data/                   # Local storage (conversations, config)
-├── docs/                       # Documentation
-└── tests/                      # Test suites
+└── docs/                       # Documentation
 ```
 
 ---
