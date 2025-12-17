@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Initial Public Release
 
-**Ollama Easy GUI** is a professional chat interface for Ollama AI models,
+**Ollama Easy GUI** is a chat interface for Ollama AI models,
 designed with a privacy-first approach where all data stays on your local machine.
 
 ### Features

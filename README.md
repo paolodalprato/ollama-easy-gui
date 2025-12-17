@@ -1,6 +1,6 @@
 # Ollama Easy GUI
 
-**Easy GUI for Ollama** - Professional chat interface for an already existing Ollama installation, with MCP support, web search, and privacy-first design.
+**Easy GUI for Ollama** - Chat interface for an already existing Ollama installation, with MCP support, web search, and privacy-first design.
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/paolodalprato/ollama-easy-gui)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -21,7 +21,7 @@
 - **Base Prompt per Model** - Persistent custom behavior for each model
 - **Attachments** - PDF, DOCX, images, and text files support
 - **Export** - Save conversations as Markdown, TXT, or Word
-- **Material Design UI** - Clean, professional interface
+- **Material Design UI** - Clean, modern interface
 - **Privacy First** - All data stays local, no cloud dependencies
 
 ---
@@ -39,7 +39,7 @@
 > **Note on language behavior**: When you attach documents, the AI model tends to respond in the document's language, even if your question is in a different language. This is a characteristic of how language models process context. For consistent language responses, ensure your base prompt, question, and attachments are in the same language.
 
 ### MCP Integration (Model Context Protocol)
-Connect your AI to external tools - just like Claude Desktop:
+Connect your AI to external tools via MCP (Model Context Protocol):
 - **Filesystem access** - Let AI read/write files
 - **GitHub integration** - Query repositories
 - **Custom MCP servers** - Extend with any MCP-compatible tool

@@ -10,13 +10,13 @@
 ## 1. PROJECT OVERVIEW
 
 ### What is Ollama Easy GUI
-Professional Chat Interface for Ollama AI Models - Local GUI, privacy-first, with advanced features not found in other GUIs (LM Studio, Ollama Web UI).
+Chat Interface for Ollama AI Models - Local GUI, privacy-first.
 
-### Key Differentiators
-- **MCP Support**: Model Context Protocol integration (like Claude Desktop) - UNIQUE in Ollama ecosystem
+### Key Features
+- **MCP Support**: Model Context Protocol integration for external tools
 - **Web Search**: Web search integrated in AI responses (DuckDuckGo)
 - **Hub Search**: Search and download models directly from GUI
-- **Material Design 3**: Professional and accessible UI
+- **Material Design 3**: Clean and accessible UI
 - **Zero Dependencies**: Vanilla JS, no frameworks
 
 ### Technology Stack

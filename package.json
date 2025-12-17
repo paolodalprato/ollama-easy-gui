@@ -1,7 +1,7 @@
 {
   "name": "ollama-easy-gui",
   "version": "1.0.0",
-  "description": "Ollama Easy GUI - Professional chat interface for Ollama with MCP support, web search, and privacy-first design",
+  "description": "Ollama Easy GUI - Chat interface for Ollama with MCP support, web search, and privacy-first design",
   "main": "app/backend/server.js",
   "scripts": {
     "start": "node app/backend/server.js",
