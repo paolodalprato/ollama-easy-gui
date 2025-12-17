@@ -71,6 +71,8 @@ Connect your AI to external tools - just like Claude Desktop:
 
 ## Installation
 
+> **Note**: This application has been developed and tested on **Windows**. It should work on macOS and Linux, but these platforms have not been tested yet. Feedback and contributions are welcome!
+
 ### Prerequisites
 
 > **Important**: Ollama Easy GUI is an interface for Ollama. You must have **Ollama installed** on your system first.
@@ -107,7 +109,18 @@ For Windows users, **double-click `start-ollama-easy-gui.bat`** instead of using
 
 ![Update prompt on startup](docs/images/file%20bat%20update.jpg)
 
-You can edit the `.bat` file to customize performance settings for your hardware.
+You can edit the `.bat` file to customize performance settings for your hardware:
+
+```bat
+:: Adjust these values based on your GPU/CPU
+set "OLLAMA_GPU_LAYERS=18"          :: Number of layers to offload to GPU
+set "OLLAMA_FLASH_ATTENTION=1"      :: Enable flash attention (faster)
+set "OLLAMA_NUM_THREADS=24"         :: CPU threads for inference
+
+:: Optional: Set a custom cache directory for Ollama models
+:: Uncomment and modify the path to match your system
+:: set "OLLAMA_CACHE_DIR=C:\your\custom\cache\path"
+```
 
 > **Difference**: `npm start` just runs the server. The `.bat` file also offers update checking and configures Ollama environment variables for optimal GPU/CPU usage.
 
