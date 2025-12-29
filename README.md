@@ -326,17 +326,20 @@ Ollama Easy GUI includes a centralized logging system for troubleshooting. Logs 
 - **Frontend**: Vanilla JavaScript (no frameworks)
 - **Styling**: Material Design 3 inspired, 15 modular CSS files
 - **Storage**: Local JSON files
-- **Dependencies**: Only `pdf-parse` for PDF attachment support
+- **Dependencies**: Minimal - `@modelcontextprotocol/sdk` for MCP, `pdf-parse` for PDF attachments
 
 ### Architecture
 ```
 ollama-easy-gui/
 ├── app/
 │   ├── backend/
-│   │   ├── server.js           # Entry point
+│   │   ├── server.js           # Entry point, routing, security middleware
 │   │   ├── controllers/        # 9 API controllers
-│   │   ├── core/               # Business logic (Ollama, Storage)
-│   │   └── mcp/                # MCP client implementation
+│   │   ├── core/               # Business logic (Ollama, Storage, Logging)
+│   │   ├── mcp/                # MCP client implementation
+│   │   ├── security/           # SecurityValidator (rate limiting, XSS)
+│   │   ├── config/             # OllamaConfig (centralized constants)
+│   │   └── utils/              # HttpResponse, RequestParser utilities
 │   ├── frontend/
 │   │   ├── index.html          # Single-page application
 │   │   ├── css/                # 15 modular CSS files

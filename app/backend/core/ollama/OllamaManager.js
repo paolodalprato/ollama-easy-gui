@@ -1,21 +1,59 @@
-// OllamaManager - Minimal and stable version
-// Without problematic STDIO buffers, simple and robust management
+/**
+ * OllamaManager - Core Ollama process and model management
+ *
+ * Handles all interactions with the Ollama runtime:
+ * - Process lifecycle (start, stop, health checks)
+ * - Model management (list, download, remove)
+ * - Download progress tracking with real-time updates
+ *
+ * @module OllamaManager
+ * @requires child_process
+ */
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * @typedef {Object} OllamaStatus
+ * @property {boolean} isRunning - Whether Ollama server is running
+ * @property {string|null} version - Ollama version string
+ * @property {string|null} modelsPath - Custom models directory path
+ * @property {Date} lastCheck - Timestamp of last health check
+ */
+
+/**
+ * @typedef {Object} DownloadProgress
+ * @property {boolean} active - Whether a download is in progress
+ * @property {string|null} modelName - Name of model being downloaded
+ * @property {number} percentage - Download progress (0-100)
+ * @property {string} status - Current status ('idle'|'pulling'|'downloading'|'verifying'|'finalizing'|'completed'|'error')
+ * @property {string} details - Human-readable status message
+ * @property {string} downloadedSize - Downloaded size (e.g., "1.8 GB")
+ * @property {string} totalSize - Total size (e.g., "4.1 GB")
+ * @property {number|null} startTime - Download start timestamp
+ */
+
 class OllamaManager {
+    /**
+     * Create an OllamaManager instance
+     * Initializes status tracking and download progress state
+     */
     constructor() {
+        /** @type {OllamaStatus} */
         this.status = {
             isRunning: false,
             version: null,
-            modelsPath: 'D:\\Ollama\\Models',
+            modelsPath: process.env.OLLAMA_MODELS || null,
             lastCheck: new Date()
         };
+
+        /** @type {ChildProcess|null} */
         this.ollamaProcess = null;
+
+        /** @type {Function[]} */
         this.statusCallbacks = [];
 
-        // Download progress tracking
+        /** @type {DownloadProgress} */
         this.downloadProgress = {
             active: false,
             modelName: null,
@@ -31,10 +69,13 @@ class OllamaManager {
         console.log('🚀 Streaming always active (like official Ollama)');
     }
 
-    // Streaming always active - no configuration necessary
-
     // === OLLAMA PROCESS MANAGEMENT ===
-    
+
+    /**
+     * Start the Ollama server process
+     * Checks if already running, verifies installation, then spawns the server
+     * @returns {Promise<boolean>} True if started successfully or already running
+     */
     async startOllama() {
         try {
             console.log('🔍 Starting Ollama with minimal stability...');
@@ -87,6 +128,13 @@ class OllamaManager {
         }
     }
 
+    /**
+     * Wait for Ollama server to become healthy after startup
+     * Polls health endpoint with retries
+     * @returns {Promise<boolean>} True if server became healthy
+     * @throws {Error} If server fails to start after max attempts
+     * @private
+     */
     async waitForStartup() {
         const maxAttempts = 6;
         const waitMs = 1500;
@@ -109,8 +157,13 @@ class OllamaManager {
         throw new Error('Ollama failed to start after verification attempts');
     }
 
-    // === SIMPLE HEALTH CHECK ===
-    
+    // === HEALTH CHECK ===
+
+    /**
+     * Check if Ollama server is healthy and responding
+     * Updates internal status with version and running state
+     * @returns {Promise<boolean>} True if server is healthy
+     */
     async checkOllamaHealth() {
         try {
             const response = await fetch('http://127.0.0.1:11434/api/version', {
@@ -134,7 +187,11 @@ class OllamaManager {
     }
 
     // === INSTALLATION VERIFICATION ===
-    
+
+    /**
+     * Verify Ollama is installed on the system
+     * @returns {Promise<boolean>} True if ollama command is available
+     */
     async checkOllamaInstallation() {
         return new Promise((resolve) => {
             exec('ollama --version', (error, stdout) => {
@@ -148,8 +205,13 @@ class OllamaManager {
         });
     }
 
-    // === SIMPLE API ===
-    
+    // === STATUS API ===
+
+    /**
+     * Get current Ollama status
+     * Performs health check and returns status object
+     * @returns {Promise<{isRunning: boolean, version: string|null, lastCheck: Date}>}
+     */
     async getStatus() {
         await this.checkOllamaHealth();
         return {
@@ -159,6 +221,12 @@ class OllamaManager {
         };
     }
 
+    /**
+     * Stop the Ollama server process
+     * Handles both managed process and standalone Ollama instances
+     * Platform-aware: uses taskkill on Windows, pkill on Unix
+     * @returns {Promise<{success: boolean, message?: string, error?: string}>}
+     */
     async stopOllama() {
         try {
             console.log('🛑 Attempting to stop Ollama...');
@@ -250,6 +318,12 @@ class OllamaManager {
 
     // === MODEL MANAGEMENT ===
 
+    /**
+     * Remove a model from local storage
+     * Executes `ollama rm <modelName>` command
+     * @param {string} modelName - Name of the model to remove
+     * @returns {Promise<{success: boolean, message?: string, error?: string, output?: string, warnings?: string}>}
+     */
     async removeModel(modelName) {
         try {
             console.log(`🗑️ Attempting to remove model: ${modelName}`);
@@ -515,26 +589,31 @@ class OllamaManager {
         };
     }
 
+    /**
+     * Get list of locally installed models
+     * Fetches from Ollama API /api/tags endpoint
+     * @returns {Promise<{success: boolean, data: Object[], error?: string}>}
+     */
     async getLocalModels() {
         try {
             console.log('📦 Getting local models via API...');
-            
+
             const response = await fetch('http://127.0.0.1:11434/api/tags', {
                 method: 'GET',
                 timeout: 10000
             });
-            
+
             if (!response.ok) {
                 throw new Error(`API responded with status ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             return {
                 success: true,
                 data: data.models || []
             };
-            
+
         } catch (error) {
             console.error('❌ Error getting local models:', error);
             return {
@@ -544,31 +623,50 @@ class OllamaManager {
             };
         }
     }
-    
-    async autoStartOllama() {
-        return await this.startOllama();
+
+    /**
+     * Alias for getLocalModels (backward compatibility)
+     * @returns {Promise<{success: boolean, data: Object[], error?: string}>}
+     */
+    async listLocalModels() {
+        return await this.getLocalModels();
     }
 
-    async getOllamaStatus() {
-        return await this.getStatus();
-    }
+    // === MONITORING (disabled) ===
 
-    // Monitoring disabled - UI indicator is sufficient
+    /**
+     * Start monitoring (no-op, UI indicator is sufficient)
+     * @deprecated Monitoring disabled in minimal version
+     */
     startMonitoring() {
         console.log('🔍 Monitoring disabled - UI indicator is sufficient');
     }
 
+    /**
+     * Stop monitoring (no-op)
+     * @deprecated Monitoring disabled in minimal version
+     */
     stopMonitoring() {
         // No-op
     }
 
-    // === CALLBACK SYSTEM FOR COMPATIBILITY ===
-    
+    // === CALLBACK SYSTEM ===
+
+    /**
+     * Register a callback for status changes
+     * @param {Function} callback - Function to call on status change (status, message, details)
+     */
     onStatusChange(callback) {
         this.statusCallbacks.push(callback);
     }
 
-    // Trigger status change callback
+    /**
+     * Notify all registered callbacks of a status change
+     * @param {string} status - Status identifier
+     * @param {string} message - Human-readable message
+     * @param {Object} details - Additional details object
+     * @private
+     */
     notifyStatusChange(status, message, details = {}) {
         this.statusCallbacks.forEach(callback => {
             try {
@@ -579,16 +677,11 @@ class OllamaManager {
         });
     }
 
-    // Other legacy methods that might be called
-    async ensureOllamaRunning() {
-        return await this.startOllama();
-    }
-
-    async isOllamaRunning() {
-        const status = await this.getStatus();
-        return status.isRunning;
-    }
-
+    /**
+     * Alias for startOllama (backward compatibility)
+     * Used by server.js and HealthController.js
+     * @returns {Promise<boolean>} True if started successfully
+     */
     async startOllamaServer() {
         return await this.startOllama();
     }

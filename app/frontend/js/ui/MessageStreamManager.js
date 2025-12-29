@@ -462,12 +462,20 @@ class MessageStreamManager {
     formatStreamingContent(content) {
         if (!content) return '';
 
+        // Escape HTML entities first to prevent XSS and rendering issues
+        const escaped = content
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
         // Basic formatting for streaming (more will be applied at finalization)
-        return content
+        return escaped
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code>$1</code>');
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
     }
 
     /**

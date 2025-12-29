@@ -1,6 +1,6 @@
 /**
- * MCPController.js - Controller per l'integrazione MCP in OllamaGUI
- * CommonJS version per compatibilità con architettura esistente
+ * MCPController.js - Controller for MCP integration in OllamaGUI
+ * CommonJS version for compatibility with existing architecture
  */
 
 const MCPClient = require('../mcp/MCPClient');
@@ -8,32 +8,32 @@ const logger = require('../core/logging/LoggingService');
 
 class MCPController {
     constructor() {
-        // Istanza del client MCP (singleton pattern)
+        // MCP client instance (singleton pattern)
         this.mcpClient = null;
     }
 
     /**
-     * Inizializza il client MCP se non già inizializzato
+     * Initialize MCP client if not already initialized
      */
     async getMCPClient() {
         if (!this.mcpClient) {
             this.mcpClient = new MCPClient();
 
-            // Aggiungi listener per eventi importanti con logging
+            // Add listeners for important events with logging
             this.mcpClient.on('initialized', () => {
-                console.log('[MCPController] Client MCP inizializzato con successo');
-                logger.mcp('info', 'Client MCP inizializzato con successo');
+                console.log('[MCPController] MCP client initialized successfully');
+                logger.mcp('info', 'MCP client initialized successfully');
             });
 
             this.mcpClient.on('serverConnected', (serverName, capabilities) => {
                 const toolCount = capabilities.tools?.length || 0;
-                console.log(`[MCPController] Server ${serverName} connesso con ${toolCount} tools`);
-                logger.mcp('info', `Server ${serverName} connesso`, { tools: toolCount });
+                console.log(`[MCPController] Server ${serverName} connected with ${toolCount} tools`);
+                logger.mcp('info', `Server ${serverName} connected`, { tools: toolCount });
             });
 
             this.mcpClient.on('disconnected', () => {
-                console.log('[MCPController] Client MCP disconnesso');
-                logger.mcp('info', 'Client MCP disconnesso');
+                console.log('[MCPController] MCP client disconnected');
+                logger.mcp('info', 'MCP client disconnected');
             });
         }
 
@@ -55,16 +55,16 @@ class MCPController {
                 success: true,
                 data: {
                     ...status,
-                    message: status.isInitialized ? 'MCP attivo e funzionante' : 'MCP non inizializzato'
+                    message: status.isInitialized ? 'MCP active and working' : 'MCP not initialized'
                 }
             }));
-            
+
         } catch (error) {
-            console.error('[MCPController] Errore recupero status:', error.message);
+            console.error('[MCPController] Error retrieving status:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore recupero status MCP',
+                error: 'Error retrieving MCP status',
                 details: error.message
             }));
         }
@@ -86,16 +86,16 @@ class MCPController {
                 data: {
                     tools: tools,
                     count: tools.length,
-                    message: `${tools.length} tools MCP disponibili`
+                    message: `${tools.length} MCP tools available`
                 }
             }));
-            
+
         } catch (error) {
-            console.error('[MCPController] Errore recupero tools:', error.message);
+            console.error('[MCPController] Error retrieving tools:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore recupero tools MCP',
+                error: 'Error retrieving MCP tools',
                 details: error.message
             }));
         }
@@ -106,60 +106,60 @@ class MCPController {
      */
     async executeTool(req, res) {
         try {
-            // Leggi il body della richiesta
+            // Read request body
             let body = '';
             req.on('data', chunk => {
                 body += chunk.toString();
             });
-            
+
             req.on('end', async () => {
                 try {
                     const { toolName, parameters } = JSON.parse(body);
-                    
+
                     if (!toolName) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({
                             success: false,
-                            error: 'Nome tool richiesto'
+                            error: 'Tool name required'
                         }));
                         return;
                     }
-                    
+
                     const client = await this.getMCPClient();
                     await client.initialize();
 
-                    console.log(`[MCPController] Esecuzione tool: ${toolName}`);
-                    logger.mcp('info', `Esecuzione tool: ${toolName}`, { parameters });
+                    console.log(`[MCPController] Executing tool: ${toolName}`);
+                    logger.mcp('info', `Executing tool: ${toolName}`, { parameters });
 
                     const result = await client.callTool(toolName, parameters || {});
-                    logger.mcp('info', `Tool ${toolName} completato`, { success: true });
-                    
+                    logger.mcp('info', `Tool ${toolName} completed`, { success: true });
+
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         success: true,
                         data: {
                             toolName: toolName,
                             result: result,
-                            message: `Tool ${toolName} eseguito con successo`
+                            message: `Tool ${toolName} executed successfully`
                         }
                     }));
-                    
+
                 } catch (parseError) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         success: false,
-                        error: 'Errore parsing richiesta',
+                        error: 'Request parsing error',
                         details: parseError.message
                     }));
                 }
             });
-            
+
         } catch (error) {
-            console.error(`[MCPController] Errore esecuzione tool:`, error.message);
+            console.error(`[MCPController] Tool execution error:`, error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore esecuzione tool MCP',
+                error: 'MCP tool execution error',
                 details: error.message
             }));
         }
@@ -180,16 +180,16 @@ class MCPController {
                 success: true,
                 data: {
                     ...status,
-                    message: 'Configurazione MCP ricaricata con successo'
+                    message: 'MCP configuration reloaded successfully'
                 }
             }));
-            
+
         } catch (error) {
-            console.error('[MCPController] Errore ricarica configurazione:', error.message);
+            console.error('[MCPController] Error reloading configuration:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore ricarica configurazione MCP',
+                error: 'Error reloading MCP configuration',
                 details: error.message
             }));
         }
@@ -235,16 +235,16 @@ class MCPController {
                     servers: servers,
                     totalConfigured: servers.length,
                     totalConnected: status.connectedServers.length,
-                    message: `${servers.length} server configurati, ${status.connectedServers.length} connessi`
+                    message: `${servers.length} servers configured, ${status.connectedServers.length} connected`
                 }
             }));
-            
+
         } catch (error) {
-            console.error('[MCPController] Errore recupero server:', error.message);
+            console.error('[MCPController] Error retrieving servers:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore recupero server MCP',
+                error: 'Error retrieving MCP servers',
                 details: error.message
             }));
         }
@@ -264,18 +264,18 @@ class MCPController {
             res.end(JSON.stringify({
                 success: true,
                 data: {
-                    message: 'Test integrazione MCP completato',
+                    message: 'MCP integration test completed',
                     availableTools: availableTools.length,
                     mcpStatus: client.getServerStatus()
                 }
             }));
-            
+
         } catch (error) {
-            console.error('[MCPController] Errore test integrazione:', error.message);
+            console.error('[MCPController] Integration test error:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore test integrazione MCP',
+                error: 'MCP integration test error',
                 details: error.message
             }));
         }
@@ -295,16 +295,16 @@ class MCPController {
             res.end(JSON.stringify({
                 success: true,
                 data: {
-                    message: 'Disconnesso da tutti i server MCP'
+                    message: 'Disconnected from all MCP servers'
                 }
             }));
 
         } catch (error) {
-            console.error('[MCPController] Errore disconnessione:', error.message);
+            console.error('[MCPController] Disconnection error:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore disconnessione MCP',
+                error: 'MCP disconnection error',
                 details: error.message
             }));
         }
@@ -328,7 +328,7 @@ class MCPController {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         success: false,
-                        error: 'Nome server richiesto'
+                        error: 'Server name required'
                     }));
                     return;
                 }
@@ -342,7 +342,7 @@ class MCPController {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         success: false,
-                        error: 'File configurazione MCP non trovato'
+                        error: 'MCP configuration file not found'
                     }));
                     return;
                 }
@@ -354,7 +354,7 @@ class MCPController {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         success: false,
-                        error: `Server '${serverName}' non trovato nella configurazione`
+                        error: `Server '${serverName}' not found in configuration`
                     }));
                     return;
                 }
@@ -365,8 +365,8 @@ class MCPController {
                 // Save updated config
                 fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
 
-                console.log(`[MCPController] Server ${serverName} ${enabled ? 'abilitato' : 'disabilitato'}`);
-                logger.mcp('info', `Server ${serverName} ${enabled ? 'abilitato' : 'disabilitato'}`);
+                console.log(`[MCPController] Server ${serverName} ${enabled ? 'enabled' : 'disabled'}`);
+                logger.mcp('info', `Server ${serverName} ${enabled ? 'enabled' : 'disabled'}`);
 
                 // Reload MCP configuration to apply changes
                 const client = await this.getMCPClient();
@@ -381,16 +381,16 @@ class MCPController {
                         serverName: serverName,
                         enabled: enabled,
                         connectedServers: status.connectedServers,
-                        message: `Server ${serverName} ${enabled ? 'abilitato' : 'disabilitato'} con successo`
+                        message: `Server ${serverName} ${enabled ? 'enabled' : 'disabled'} successfully`
                     }
                 }));
 
             } catch (parseError) {
-                console.error('[MCPController] Errore toggle server:', parseError.message);
+                console.error('[MCPController] Server toggle error:', parseError.message);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
                     success: false,
-                    error: 'Errore parsing richiesta',
+                    error: 'Request parsing error',
                     details: parseError.message
                 }));
             }
@@ -415,16 +415,16 @@ class MCPController {
                     tools: tools,
                     count: tools.length,
                     format: 'ollama',
-                    message: `${tools.length} tools pronti per Ollama`
+                    message: `${tools.length} tools ready for Ollama`
                 }
             }));
 
         } catch (error) {
-            console.error('[MCPController] Errore recupero tools per Ollama:', error.message);
+            console.error('[MCPController] Error retrieving tools for Ollama:', error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
                 success: false,
-                error: 'Errore recupero tools MCP',
+                error: 'Error retrieving MCP tools',
                 details: error.message
             }));
         }

@@ -49,17 +49,16 @@ class Router {
     async handleRequest(req, res) {
         const { method, url } = req;
 
-        // PHASE 4B.1: Security validation middleware - DISABLED FOR DEVELOPMENT
-        /*
+        // PHASE 4B.1: Security validation middleware
         try {
             SecurityValidator.validateRequest(req);
         } catch (error) {
             console.error('🚨 Security validation failed:', error.message);
-            res.writeHead(429, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Request blocked for security reasons' }));
+            const statusCode = error.message.includes('Rate limit') ? 429 : 400;
+            res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: error.message }));
             return true;
         }
-        */
 
         // Handle OPTIONS for CORS
         if (method === 'OPTIONS') {

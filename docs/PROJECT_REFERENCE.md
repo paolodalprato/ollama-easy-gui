@@ -1,9 +1,9 @@
 # PROJECT REFERENCE - OLLAMA EASY GUI
 
-**Software Version**: 1.0.0
-**Last Updated**: December 15, 2025
+**Software Version**: 1.0.1
+**Last Updated**: December 29, 2025
 **Repository**: https://github.com/paolodalprato/ollama-easy-gui
-**Status**: Feature complete - Ready for GitHub
+**Status**: Feature complete - Production ready
 
 ---
 
@@ -66,19 +66,26 @@ ollama-easy-gui/
 │   │   │   ├── MCPController.js      # MCP API
 │   │   │   ├── SystemPromptController.js
 │   │   │   ├── ProxyController.js
+│   │   │   ├── LogController.js
 │   │   │   └── HealthController.js
 │   │   ├── core/
 │   │   │   ├── ollama/
 │   │   │   │   ├── OllamaManager.js
-│   │   │   │   ├── ModelManager.js
 │   │   │   │   └── HubSearcher.js    # Hub search backend
-│   │   │   └── storage/
-│   │   │       └── ChatStorage.js
+│   │   │   ├── storage/
+│   │   │   │   └── ChatStorage.js
+│   │   │   └── logging/
+│   │   │       └── LoggingService.js # Centralized logging
 │   │   ├── mcp/
 │   │   │   ├── MCPClient.js          # MCP client
 │   │   │   └── MCPConnection.js      # JSON-RPC stdio
-│   │   └── security/
-│   │       └── SecurityValidator.js
+│   │   ├── security/
+│   │   │   └── SecurityValidator.js  # Rate limiting, XSS prevention
+│   │   ├── config/
+│   │   │   └── OllamaConfig.js       # Centralized constants
+│   │   └── utils/
+│   │       ├── HttpResponse.js       # HTTP response utilities
+│   │       └── RequestParser.js      # Request body parsing
 │   ├── frontend/
 │   │   ├── index.html             # 270 lines
 │   │   ├── css/                   # 15 modular files
@@ -258,6 +265,7 @@ Ollama Easy GUI follows **Semantic Versioning 2.0.0** (SemVer).
 
 | Version | Date | Type | Description |
 |---------|------|------|-------------|
+| 1.0.1 | Dec 29, 2025 | PATCH | Security fixes (XSS, rate limiting), code cleanup, new utilities |
 | 1.0.0 | Dec 15, 2025 | Initial | First public release - Feature complete, UI and code in English |
 
 ### References
@@ -274,4 +282,4 @@ Ollama Easy GUI follows **Semantic Versioning 2.0.0** (SemVer).
 
 ---
 
-*Document last updated: December 15, 2025*
+*Document last updated: December 29, 2025*

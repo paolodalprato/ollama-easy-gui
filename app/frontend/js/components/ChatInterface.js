@@ -1,17 +1,42 @@
-// ChatInterface.js - Chat interface management (REFACTORED - PHASE 3A.2)
+/**
+ * ChatInterface - Main chat UI component
+ *
+ * Manages the chat interface including:
+ * - Conversation CRUD (create, load, delete, rename)
+ * - Message display and formatting
+ * - Attachment handling (delegated to AttachmentManager)
+ * - Streaming responses (delegated to MessageStreamManager)
+ * - Download/export functionality
+ *
+ * @class ChatInterface
+ */
 class ChatInterface {
+    /**
+     * Create a ChatInterface instance
+     * @param {Object} app - Main application instance with apiClient, models, etc.
+     */
     constructor(app) {
+        /** @type {Object} Main app reference */
         this.app = app;
+
+        /** @type {string|null} Currently selected chat ID */
         this.currentChatId = null;
+
+        /** @type {Object[]} List of chat objects */
         this.chats = [];
+
+        /** @type {File[]} Files waiting to be attached */
         this.pendingAttachments = [];
-        
-        // Initialize UI managers (PHASE 3A.2: Modular architecture)
+
+        // Initialize UI managers (modular architecture)
+        /** @type {AttachmentManager} Handles file attachments */
         this.attachmentManager = new AttachmentManager(this);
+
+        /** @type {MessageStreamManager} Handles streaming responses */
         this.streamManager = new MessageStreamManager(this);
-        
+
         console.log('💬 ChatInterface initialized with UI managers');
-        
+
         // Setup download menu event listeners
         this.setupDownloadMenu();
     }
@@ -47,7 +72,11 @@ class ChatInterface {
     }
 
     // === CHAT MANAGEMENT ===
-    
+
+    /**
+     * Save the current chat title (called on blur/enter)
+     * Compares with original and saves only if changed
+     */
     async saveChatTitle() {
         const titleInput = document.getElementById('currentChatTitle');
         if (!titleInput || !this.currentChatId) return;
@@ -97,11 +126,19 @@ class ChatInterface {
             titleInput.value = currentChat.title;
         }
     }
-    
+
+    /**
+     * Send the current message (delegates to MessageStreamManager)
+     * @returns {Promise<void>}
+     */
     async sendMessage() {
         return this.streamManager.sendMessage();
     }
-    
+
+    /**
+     * Show the "New Chat" modal dialog
+     * Populates model list and resets form
+     */
     showNewChatModal() {
         // Populate model list in modal
         this.populateModalModelList();
@@ -152,11 +189,18 @@ class ChatInterface {
         console.log('📋 Modal model list populated with', this.app.models.length, 'models');
     }
     
+    /**
+     * Cancel new chat creation and close modal
+     */
     cancelNewChat() {
         DOMUtils.hideModal('newChatModal');
         console.log('❌ New chat cancelled');
     }
-    
+
+    /**
+     * Create a new chat from modal form data
+     * Creates chat via API, updates UI, and selects the new chat
+     */
     async createNewChat() {
         const title = DOMUtils.getValue('newChatTitle').trim();
         const modelSelect = document.getElementById('newChatModel');
@@ -295,6 +339,10 @@ class ChatInterface {
         }
     }
     
+    /**
+     * Load the list of all chats from server
+     * Updates this.chats and renders the chat list
+     */
     async loadChatList() {
         console.log('📥 Loading chat list...');
         try {
@@ -364,6 +412,11 @@ class ChatInterface {
         });
     }
     
+    /**
+     * Select and load a chat by ID
+     * Updates UI, loads messages, and handles model switching
+     * @param {string} chatId - Chat identifier to select
+     */
     async selectChat(chatId) {
         console.log('📂 Selecting chat:', chatId);
         this.currentChatId = chatId;
@@ -513,9 +566,30 @@ class ChatInterface {
         return this.attachmentManager.showChatAttachments(chatId, attachments);
     }
     
+    /**
+     * Format message content for display
+     * Escapes HTML to prevent XSS, then applies markdown-like formatting
+     * @param {string} content - Raw message content
+     * @returns {string} Formatted HTML string
+     */
     formatMessage(content) {
-        // Basic formatting - can be enhanced later
-        return content.replace(/\n/g, '<br>');
+        if (!content) return '';
+
+        // Escape HTML entities to prevent XSS and rendering issues
+        // This fixes the bug where <script> tags in AI responses were interpreted as HTML
+        const escaped = content
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+        // Apply markdown-like formatting after escaping
+        return escaped
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
     }
 
     // === DOWNLOAD MENU FUNCTIONS ===

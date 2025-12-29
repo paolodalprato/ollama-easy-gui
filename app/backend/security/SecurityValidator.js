@@ -144,15 +144,21 @@ class SecurityValidator {
     /**
      * Rate Limiting Check
      * Basic rate limiting implementation
+     * Note: Relaxed limits for local desktop app (not exposed to internet)
      */
-    static checkRateLimit(clientId, windowMs = 15 * 60 * 1000, maxRequests = 100) {
+    static checkRateLimit(clientId, windowMs = 60 * 1000, maxRequests = 500) {
+        // Skip rate limiting for localhost (local desktop app)
+        if (clientId === '::1' || clientId === '127.0.0.1' || clientId === '::ffff:127.0.0.1') {
+            return true;
+        }
+
         if (!this.rateLimitStore) {
             this.rateLimitStore = new Map();
         }
-        
+
         const now = Date.now();
         const client = this.rateLimitStore.get(clientId);
-        
+
         if (!client) {
             this.rateLimitStore.set(clientId, {
                 count: 1,
@@ -160,17 +166,17 @@ class SecurityValidator {
             });
             return true;
         }
-        
+
         if (now > client.resetTime) {
             client.count = 1;
             client.resetTime = now + windowMs;
             return true;
         }
-        
+
         if (client.count >= maxRequests) {
             throw new Error('Rate limit exceeded - please try again later');
         }
-        
+
         client.count++;
         return true;
     }
