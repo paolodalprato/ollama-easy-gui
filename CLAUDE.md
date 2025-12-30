@@ -9,7 +9,7 @@ Chat interface for Ollama with MCP support, global system prompts, and privacy-f
 - **Frontend**: Vanilla JavaScript (no frameworks)
 - **Styling**: Material Design 3 inspired, modular CSS
 - **Storage**: Local JSON files
-- **Dependencies**: Minimal (`@modelcontextprotocol/sdk`, `pdf-parse`)
+- **Dependencies**: Minimal (`@modelcontextprotocol/sdk`, `pdf-parse`, `docx`)
 
 ## Structure
 
@@ -161,5 +161,16 @@ ollama-easy-gui/
 - Standardized `MCPController.js` comments (Italian → English)
 - Removed hardcoded Ollama path, now uses `OLLAMA_MODELS` env variable
 
+## Recent Changes (2025-12-30)
+
+### DOCX Export Fix
+- **Fixed DOCX generation**: Previously exported Markdown with `.docx` extension (invalid). Now generates proper Word documents using the `docx` library.
+- **UTF-8 support**: Accented characters (Italian, French, etc.) now display correctly in Word.
+- **Markdown parsing**: Basic support for headings, bold, italic, bullet points, and inline code.
+- **New methods in `ChatController.js`**:
+  - `_generateDocx(message, metadata)` - Async, returns Buffer
+  - `_parseContentToParagraphs(content)` - Converts Markdown to DOCX paragraphs
+  - `_parseInlineFormatting(text)` - Handles bold/italic/code inline formatting
+
 ---
-*Updated 2025-12-29 by code-review.*
+*Updated 2025-12-30.*

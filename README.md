@@ -2,7 +2,7 @@
 
 **Easy GUI for Ollama** - Chat interface for an already existing Ollama installation, with MCP support, global system prompts, and privacy-first design.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/paolodalprato/ollama-easy-gui)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/paolodalprato/ollama-easy-gui)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
@@ -326,7 +326,7 @@ Ollama Easy GUI includes a centralized logging system for troubleshooting. Logs 
 - **Frontend**: Vanilla JavaScript (no frameworks)
 - **Styling**: Material Design 3 inspired, 15 modular CSS files
 - **Storage**: Local JSON files
-- **Dependencies**: Minimal - `@modelcontextprotocol/sdk` for MCP, `pdf-parse` for PDF attachments
+- **Dependencies**: Minimal - `@modelcontextprotocol/sdk` for MCP, `pdf-parse` for PDF attachments, `docx` for Word export
 
 ### Architecture
 ```

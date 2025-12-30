@@ -5,6 +5,14 @@ All notable changes to Ollama Easy GUI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-12-30
+
+### Fixed
+- **DOCX Export**: Fixed Word document export that was generating invalid files. The export now creates proper DOCX documents with correct UTF-8 encoding for accented characters (Italian, French, etc.) and basic Markdown formatting support (headings, bold, italic, bullet points, code).
+
+### Changed
+- Added `docx` library (v9.5.1) as a new dependency for proper Word document generation.
+
 ## [1.0.0] - 2025-12-14
 
 ### Initial Public Release
