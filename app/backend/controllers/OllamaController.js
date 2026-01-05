@@ -89,7 +89,7 @@ class OllamaController {
     }
 
 
-    // Proxy per API Ollama - Delegated to ProxyController
+    // Proxy for Ollama API - Delegated to ProxyController
     async proxyToOllama(req, res) {
         // Check if Ollama is active before proxying
         const status = await this.ollamaManager.getStatus();
@@ -105,12 +105,12 @@ class OllamaController {
         return this.proxyController.proxyToOllama(req, res);
     }
 
-    // Chat con streaming in tempo reale (SSE) - Delegated to ChatController
+    // Chat with real-time streaming (SSE) - Delegated to ChatController
     async sendChatMessageStream(req, res) {
         return this.chatController.sendChatMessageStream(req, res, this.ollamaManager);
     }
 
-    // Chat con salvataggio automatico (metodo principale - backward compatibility)
+    // Chat with auto-save (main method - backward compatibility)
     async sendChatMessage(req, res) {
         let body = '';
         req.on('data', chunk => body += chunk.toString());
@@ -183,22 +183,13 @@ class OllamaController {
         });
     }
     
-    // Utility: Stream data from Ollama with real-time forwarding
-    
-
-    // Utility: Effettua richiesta HTTP a Ollama (con gestione timeout migliorata)
-    
-    // Utility: Timeout dinamico per modelli (versione semplificata)
+    // Utility: Get dynamic timeout for model (simplified version, delegates to ChatController)
     async _getTimeoutForModel(modelName) {
         return this.chatController._getTimeoutForModel(modelName);
     }
 
-    // Process attachments and extract content for AI
-
     // ========== SYSTEM PROMPTS MANAGEMENT ==========
-    
-    // Helper method to get system prompt for a model
-    
+
     // Get all system prompts - Delegated to SystemPromptController
     async getSystemPrompts(req, res) {
         return this.systemPromptController.getSystemPrompts(req, res);

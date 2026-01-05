@@ -150,39 +150,6 @@ router.route('POST', '/api/shutdown', (req, res) => {
     }, 500);
 });
 
-// ========== SERVER-SENT EVENTS ==========
-router.route('GET', '/events', (req, res) => {
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Cache-Control'
-    });
-
-    // Keep connection open
-    const clientId = Date.now();
-    clients.push({ id: clientId, res });
-    console.log(`📡 EventSource client connected: ${clientId}`);
-
-    // Remove client when disconnected
-    req.on('close', () => {
-        const index = clients.findIndex(client => client.id === clientId);
-        if (index !== -1) {
-            clients.splice(index, 1);
-            console.log(`📡 EventSource client disconnected: ${clientId}`);
-        }
-    });
-
-    // Send welcome message
-    res.write(`data: ${JSON.stringify({
-        type: 'connected',
-        message: 'Connected to Ollama Easy GUI server',
-        timestamp: new Date().toISOString()
-    })}\n\n`);
-});
-
-
 // ========== MCP ROUTES ==========
 router.route('GET', '/api/mcp/status', (req, res) => mcpController.getStatus(req, res));
 router.route('GET', '/api/mcp/tools', (req, res) => mcpController.getAvailableTools(req, res));
@@ -233,18 +200,22 @@ router.route('GET', '/api/events', (req, res) => {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    // Add client to list
-    const client = { res };
+    // Add client to list with ID for tracking
+    const clientId = Date.now();
+    const client = { id: clientId, res };
     clients.push(client);
+    console.log(`📡 SSE client connected: ${clientId}`);
 
     // Remove client when disconnected
     req.on('close', () => {
-        const index = clients.indexOf(client);
+        const index = clients.findIndex(c => c.id === clientId);
         if (index !== -1) {
             clients.splice(index, 1);
+            console.log(`📡 SSE client disconnected: ${clientId}`);
         }
     });
 

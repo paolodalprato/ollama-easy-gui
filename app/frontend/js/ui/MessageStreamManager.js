@@ -389,7 +389,7 @@ class MessageStreamManager {
                 const currentContent = messageText.textContent || 'Response stopped by user.';
                 messageText.innerHTML = `
                     <div class="streaming-stopped">
-                        ${this.chatInterface.messageRenderer.formatMessage(currentContent)}
+                        ${this.chatInterface.formatMessage(currentContent)}
                         <div class="stop-indicator">⏹️ <em>Streaming stopped by user</em></div>
                     </div>
                 `;
