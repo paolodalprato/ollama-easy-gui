@@ -1,6 +1,6 @@
 /**
  * UnifiedFileSelector - Primary Enhanced File Access Component
- * 
+ *
  * PURPOSE:
  * Unified interface for single file, multiple files, and directory selection.
  * Foundation component for Enhanced File Access feature implementation.
@@ -13,50 +13,30 @@
  * - Progressive enhancement with feature detection
  * - Automatic processing mode determination
  *
- * INTEGRATION:
- * - Zero dependencies from the rest of the system (independently testable)
- * - Ready for integration with AdaptiveProcessor
- * - Compatible with existing OllamaGUI architecture
+ * DEPENDENCIES:
+ * - FileValidationUtils (for file validation)
+ * - DirectoryProcessor (for directory traversal)
  */
 
 class UnifiedFileSelector {
     constructor(options = {}) {
-        this.options = {
-            maxFileSize: 50 * 1024 * 1024, // 50MB per file
-            maxBatchSize: 500 * 1024 * 1024, // 500MB per batch total
-            maxFileCount: 100, // Max 100 files per batch
-            supportedTypes: [
-                'application/pdf',
-                'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'text/plain',
-                'text/csv',
-                'application/json',
-                'text/markdown',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                // Images
-                'image/jpeg',
-                'image/jpg',
-                'image/png',
-                'image/gif',
-                'image/webp',
-                'image/bmp',
-                'image/svg+xml'
-            ],
-            ...options
-        };
-        
+        // Initialize validation utils
+        this.validator = new (window.FileValidationUtils || FileValidationUtils)(options);
+        this.options = this.validator.options;
+
+        // Initialize directory processor
+        this.dirProcessor = new (window.DirectoryProcessor || DirectoryProcessor)(this.validator);
+
         this.isModernBrowser = this.detectFeatures();
         this.currentSelection = null;
         this.eventListeners = new Map();
-        
+
         console.log('🗂️ UnifiedFileSelector initialized', {
             modernBrowser: this.isModernBrowser,
             supportedTypes: this.options.supportedTypes.length
         });
     }
-    
+
     /**
      * Get last used directory for file picker
      */
@@ -80,11 +60,10 @@ class UnifiedFileSelector {
     saveDirectoryFromFilePath(filePath) {
         try {
             if (filePath) {
-                // Extract directory from full file path
                 const pathParts = filePath.replace(/\\/g, '/').split('/');
-                pathParts.pop(); // Remove filename
+                pathParts.pop();
                 const directoryPath = pathParts.join('/');
-                
+
                 if (directoryPath) {
                     localStorage.setItem('ollamaGUI_lastFileDirectory', directoryPath);
                     console.log(`💾 Saved directory from file path: ${directoryPath}`);
@@ -96,7 +75,7 @@ class UnifiedFileSelector {
     }
 
     /**
-     * Save last used directory to localStorage (legacy method for compatibility)
+     * Save last used directory to localStorage
      */
     saveLastUsedDirectory(directoryHandle) {
         try {
@@ -120,7 +99,7 @@ class UnifiedFileSelector {
         } catch (e) {
             hasWebKitDirectory = false;
         }
-        
+
         return {
             fileSystemAccess: hasFileSystemAccess,
             webkitDirectory: hasWebKitDirectory,
@@ -140,9 +119,8 @@ class UnifiedFileSelector {
                         <h3>📁 Select Files to Analyze</h3>
                         <button class="modal-close" data-action="close" aria-label="Close">&times;</button>
                     </div>
-                    
+
                     <div class="selection-options">
-                        <!-- Single File Option -->
                         <button class="selection-option" data-type="single" data-action="select">
                             <div class="option-icon">📄</div>
                             <div class="option-content">
@@ -152,7 +130,6 @@ class UnifiedFileSelector {
                             </div>
                         </button>
 
-                        <!-- Multiple Files Option -->
                         <button class="selection-option" data-type="multiple" data-action="select">
                             <div class="option-icon">📄📄</div>
                             <div class="option-content">
@@ -162,7 +139,6 @@ class UnifiedFileSelector {
                             </div>
                         </button>
 
-                        <!-- Directory Option -->
                         <button class="selection-option" data-type="directory" data-action="select" ${!this.isModernBrowser.fileSystemAccess ? 'disabled title="Not supported in this browser"' : ''}>
                             <div class="option-icon">📁</div>
                             <div class="option-content">
@@ -172,7 +148,7 @@ class UnifiedFileSelector {
                             </div>
                         </button>
                     </div>
-                    
+
                     <div class="quick-access-zone">
                         <div class="drop-zone-unified" data-action="drop">
                             <div class="drop-zone-icon">🎯</div>
@@ -182,7 +158,7 @@ class UnifiedFileSelector {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer">
                         <div class="browser-support-info">
                             ${this.getBrowserSupportInfo()}
@@ -191,7 +167,7 @@ class UnifiedFileSelector {
                 </div>
             </div>
         `;
-        
+
         return modalHTML;
     }
 
@@ -218,11 +194,8 @@ class UnifiedFileSelector {
             return false;
         }
 
-        // Inject modal HTML
         const modalHTML = this.showSelectionModal();
         container.insertAdjacentHTML('beforeend', modalHTML);
-
-        // Setup event listeners
         this.setupEventListeners();
 
         console.log('✅ UnifiedFileSelector initialized in DOM');
@@ -236,7 +209,6 @@ class UnifiedFileSelector {
         const modal = document.getElementById('unifiedFileModal');
         if (!modal) return;
 
-        // Modal close handlers
         modal.addEventListener('click', (e) => {
             if (e.target.dataset.action === 'close' || e.target.classList.contains('modal-overlay')) {
                 this.hideModal();
@@ -247,13 +219,11 @@ class UnifiedFileSelector {
             }
         });
 
-        // Drag and drop setup
         const dropZone = modal.querySelector('[data-action="drop"]');
         if (dropZone) {
             this.setupDragDrop(dropZone);
         }
 
-        // Keyboard support
         modal.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.hideModal();
@@ -300,7 +270,7 @@ class UnifiedFileSelector {
     async handleDrop(event) {
         const items = [...event.dataTransfer.items];
         const files = [...event.dataTransfer.files];
-        
+
         console.log('🎯 Drop detected:', { itemCount: items.length, fileCount: files.length });
 
         // Check for directory drops (WebKit)
@@ -308,7 +278,7 @@ class UnifiedFileSelector {
             const entry = items[0].webkitGetAsEntry();
             if (entry && entry.isDirectory) {
                 console.log('📁 Directory drop detected');
-                const directoryFiles = await this.processDirectoryEntry(entry);
+                const directoryFiles = await this.dirProcessor.processDirectoryEntry(entry);
                 this.processSelection({
                     type: 'directory',
                     files: directoryFiles,
@@ -321,9 +291,9 @@ class UnifiedFileSelector {
 
         // Handle file drops
         if (files.length > 0) {
-            const validFiles = await this.validateFiles(files);
-            const processingMode = this.determineProcessingMode(validFiles);
-            
+            const validFiles = await this.validator.validateFiles(files);
+            const processingMode = this.validator.determineProcessingMode(validFiles);
+
             this.processSelection({
                 type: validFiles.length === 1 ? 'single' : 'multiple',
                 files: validFiles,
@@ -339,7 +309,7 @@ class UnifiedFileSelector {
     async handleSelection(type) {
         try {
             console.log('🎯 Selection type:', type);
-            
+
             let result;
             switch(type) {
                 case 'single':
@@ -356,7 +326,7 @@ class UnifiedFileSelector {
             }
 
             this.processSelection(result);
-            
+
         } catch (error) {
             console.error('🚫 Selection failed:', error);
             this.emit('error', { error: error.message, type });
@@ -368,18 +338,16 @@ class UnifiedFileSelector {
      */
     async selectSingleFile() {
         if (!this.isModernBrowser.fileSystemAccess) {
-            // Fallback to input element
             return await this.selectSingleFileFallback();
         }
 
         const lastDir = this.getLastUsedDirectory();
         const [fileHandle] = await window.showOpenFilePicker({
             multiple: false,
-            types: this.getSupportedFileTypes(),
+            types: this.validator.getSupportedFileTypes(),
             startIn: lastDir
         });
 
-        // Save directory for next time
         try {
             const parentDir = await fileHandle.getParent?.();
             if (parentDir) {
@@ -390,7 +358,7 @@ class UnifiedFileSelector {
         }
 
         const file = await fileHandle.getFile();
-        await this.validateFiles([file]);
+        await this.validator.validateFiles([file]);
 
         return {
             type: 'single',
@@ -411,11 +379,10 @@ class UnifiedFileSelector {
         const lastDir = this.getLastUsedDirectory();
         const fileHandles = await window.showOpenFilePicker({
             multiple: true,
-            types: this.getSupportedFileTypes(),
+            types: this.validator.getSupportedFileTypes(),
             startIn: lastDir
         });
 
-        // Save directory for next time (using first file's parent)
         if (fileHandles.length > 0) {
             try {
                 const parentDir = await fileHandles[0].getParent?.();
@@ -431,8 +398,8 @@ class UnifiedFileSelector {
             fileHandles.map(handle => handle.getFile())
         );
 
-        const validFiles = await this.validateFiles(files);
-        const processingMode = this.determineProcessingMode(validFiles);
+        const validFiles = await this.validator.validateFiles(files);
+        const processingMode = this.validator.determineProcessingMode(validFiles);
 
         return {
             type: 'multiple',
@@ -456,12 +423,11 @@ class UnifiedFileSelector {
             startIn: lastDir
         });
 
-        // Save selected directory for next time
         this.saveLastUsedDirectory(dirHandle);
 
         console.log('📁 Processing directory:', dirHandle.name);
-        const files = await this.processDirectoryHandle(dirHandle);
-        
+        const files = await this.dirProcessor.processDirectoryHandle(dirHandle);
+
         return {
             type: 'directory',
             files,
@@ -472,168 +438,6 @@ class UnifiedFileSelector {
     }
 
     /**
-     * Determine processing mode based on file count
-     */
-    determineProcessingMode(files) {
-        const fileCount = files.length;
-        
-        if (fileCount === 1) {
-            return 'immediate';
-        } else if (fileCount <= 5) {
-            return 'parallel';
-        } else {
-            return 'batch';
-        }
-    }
-
-    /**
-     * Get supported file types for picker
-     */
-    getSupportedFileTypes() {
-        return [{
-            description: 'Supported documents and images',
-            accept: {
-                'application/pdf': ['.pdf'],
-                'application/msword': ['.doc'],
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-                'text/plain': ['.txt'],
-                'text/csv': ['.csv'],
-                'application/json': ['.json'],
-                'text/markdown': ['.md'],
-                'text/javascript': ['.js'],
-                'text/html': ['.html'],
-                'text/css': ['.css'],
-                'application/vnd.ms-excel': ['.xlsx'],
-                // Images
-                'image/jpeg': ['.jpg', '.jpeg'],
-                'image/png': ['.png'],
-                'image/gif': ['.gif'],
-                'image/webp': ['.webp'],
-                'image/bmp': ['.bmp'],
-                'image/svg+xml': ['.svg']
-            }
-        }];
-    }
-
-    /**
-     * Validate files before processing
-     */
-    async validateFiles(files) {
-        const validFiles = [];
-        let totalSize = 0;
-
-        for (const file of files) {
-            // File size check
-            if (file.size > this.options.maxFileSize) {
-                console.warn(`⚠️ File too large: ${file.name} (${file.size} bytes)`);
-                continue;
-            }
-
-            // File type check
-            if (!this.isAllowedFileType(file)) {
-                console.warn(`⚠️ Unsupported file type: ${file.name} (${file.type})`);
-                continue;
-            }
-
-            totalSize += file.size;
-            if (totalSize > this.options.maxBatchSize) {
-                console.warn(`⚠️ Batch size exceeded, ignoring remaining files`);
-                break;
-            }
-
-            validFiles.push(file);
-
-            if (validFiles.length >= this.options.maxFileCount) {
-                console.warn(`⚠️ Maximum file count reached (${this.options.maxFileCount})`);
-                break;
-            }
-        }
-
-        console.log(`✅ Files validated: ${validFiles.length}/${files.length}`);
-        return validFiles;
-    }
-
-    /**
-     * Check if file type is allowed
-     */
-    isAllowedFileType(file) {
-        // Check MIME type
-        if (this.options.supportedTypes.includes(file.type)) {
-            return true;
-        }
-
-        // Check file extension as fallback
-        const extension = file.name.toLowerCase().split('.').pop();
-        const allowedExtensions = [
-            'pdf', 'doc', 'docx', 'txt', 'csv', 'json', 'md', 'xls', 'xlsx', 'js', 'html', 'css',
-            'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'
-        ];
-        
-        return allowedExtensions.includes(extension);
-    }
-
-    /**
-     * Process directory handle recursively
-     */
-    async processDirectoryHandle(dirHandle, maxDepth = 3, currentDepth = 0) {
-        const files = [];
-        
-        if (currentDepth >= maxDepth) {
-            console.warn(`⚠️ Max depth reached: ${maxDepth}`);
-            return files;
-        }
-
-        for await (const [name, handle] of dirHandle.entries()) {
-            if (handle.kind === 'file') {
-                try {
-                    const file = await handle.getFile();
-                    if (this.isAllowedFileType(file)) {
-                        files.push(file);
-                    }
-                } catch (error) {
-                    console.warn(`⚠️ Cannot read file: ${name}`, error);
-                }
-            } else if (handle.kind === 'directory' && currentDepth < maxDepth) {
-                const subFiles = await this.processDirectoryHandle(handle, maxDepth, currentDepth + 1);
-                files.push(...subFiles);
-            }
-        }
-
-        return files;
-    }
-
-    /**
-     * Process directory entry (WebKit fallback)
-     */
-    async processDirectoryEntry(entry, maxDepth = 3, currentDepth = 0) {
-        return new Promise((resolve) => {
-            const files = [];
-            
-            if (currentDepth >= maxDepth) {
-                resolve(files);
-                return;
-            }
-
-            const reader = entry.createReader();
-            reader.readEntries(async (entries) => {
-                for (const entry of entries) {
-                    if (entry.isFile) {
-                        entry.file((file) => {
-                            if (this.isAllowedFileType(file)) {
-                                files.push(file);
-                            }
-                        });
-                    } else if (entry.isDirectory && currentDepth < maxDepth) {
-                        const subFiles = await this.processDirectoryEntry(entry, maxDepth, currentDepth + 1);
-                        files.push(...subFiles);
-                    }
-                }
-                resolve(files);
-            });
-        });
-    }
-
-    /**
      * Fallback single file selection
      */
     async selectSingleFileFallback() {
@@ -641,7 +445,7 @@ class UnifiedFileSelector {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = this.options.supportedTypes.join(',');
-            
+
             input.onchange = async (e) => {
                 try {
                     const file = e.target.files[0];
@@ -650,7 +454,7 @@ class UnifiedFileSelector {
                         return;
                     }
 
-                    const validFiles = await this.validateFiles([file]);
+                    const validFiles = await this.validator.validateFiles([file]);
                     if (validFiles.length === 0) {
                         reject(new Error('Invalid file'));
                         return;
@@ -680,7 +484,7 @@ class UnifiedFileSelector {
             input.type = 'file';
             input.multiple = true;
             input.accept = this.options.supportedTypes.join(',');
-            
+
             input.onchange = async (e) => {
                 try {
                     const files = Array.from(e.target.files);
@@ -689,13 +493,13 @@ class UnifiedFileSelector {
                         return;
                     }
 
-                    const validFiles = await this.validateFiles(files);
+                    const validFiles = await this.validator.validateFiles(files);
                     if (validFiles.length === 0) {
                         reject(new Error('No valid files'));
                         return;
                     }
 
-                    const processingMode = this.determineProcessingMode(validFiles);
+                    const processingMode = this.validator.determineProcessingMode(validFiles);
 
                     resolve({
                         type: 'multiple',
@@ -717,7 +521,7 @@ class UnifiedFileSelector {
      */
     processSelection(selection) {
         this.currentSelection = selection;
-        
+
         console.log('✅ Selection processed:', {
             type: selection.type,
             fileCount: selection.files.length,
@@ -737,8 +541,7 @@ class UnifiedFileSelector {
         if (modal) {
             modal.style.display = 'block';
             modal.classList.add('show');
-            
-            // Focus management
+
             const firstButton = modal.querySelector('.selection-option');
             if (firstButton) firstButton.focus();
         }
@@ -757,9 +560,8 @@ class UnifiedFileSelector {
         }
     }
 
-    /**
-     * Event system
-     */
+    // ========== EVENT SYSTEM ==========
+
     on(event, callback) {
         if (!this.eventListeners.has(event)) {
             this.eventListeners.set(event, []);
@@ -789,32 +591,23 @@ class UnifiedFileSelector {
         }
     }
 
-    /**
-     * Get current selection
-     */
     getCurrentSelection() {
         return this.currentSelection;
     }
 
-    /**
-     * Clear current selection
-     */
     clearSelection() {
         this.currentSelection = null;
     }
 
-    /**
-     * Destroy component
-     */
     destroy() {
         const modal = document.getElementById('unifiedFileModal');
         if (modal) {
             modal.remove();
         }
-        
+
         this.eventListeners.clear();
         this.currentSelection = null;
-        
+
         console.log('🗂️ UnifiedFileSelector destroyed');
     }
 }

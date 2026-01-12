@@ -1,36 +1,36 @@
-// Chat Storage Manager - Privacy-First Local Storage
-// Manages conversations and attachments completely locally to ensure privacy
+// ChatStorage - Privacy-First Local Conversation Storage
+// Manages conversations completely locally to ensure privacy
 
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const AttachmentStorage = require('./AttachmentStorage');
 
 class ChatStorageManager {
     constructor(dataPath = '../../../data') {
-        // Resolve absolute path to avoid working directory issues
         this.dataPath = path.resolve(__dirname, dataPath);
         this.conversationsPath = path.join(this.dataPath, 'conversations');
         this.configPath = path.join(this.dataPath, 'user-config.json');
         this.modelsPath = path.join(this.dataPath, 'models-cache.json');
-        
+
+        // Delegate attachment management
+        this.attachmentStorage = new AttachmentStorage(this.conversationsPath);
+
         console.log(`🔧 ChatStorage using path: ${this.dataPath}`);
         this.initializeStorage();
     }
 
-    // Initialize directory structure if it doesn't exist
+    // Initialize directory structure
     initializeStorage() {
         try {
-            // Create main directory
             if (!fs.existsSync(this.dataPath)) {
                 fs.mkdirSync(this.dataPath, { recursive: true });
             }
 
-            // Create conversations directory
             if (!fs.existsSync(this.conversationsPath)) {
                 fs.mkdirSync(this.conversationsPath, { recursive: true });
             }
 
-            // Create user config if it doesn't exist
             if (!fs.existsSync(this.configPath)) {
                 const defaultConfig = {
                     version: "1.0.0",
@@ -50,7 +50,7 @@ class ChatStorageManager {
                 fs.writeFileSync(this.configPath, JSON.stringify(defaultConfig, null, 2));
             }
 
-            console.log('✅ Chat Storage initialized:', this.dataPath);
+            console.log('✅ ChatStorage initialized:', this.dataPath);
         } catch (error) {
             console.error('❌ Error initializing storage:', error);
             throw error;
@@ -71,13 +71,9 @@ class ChatStorageManager {
         const attachmentsPath = path.join(chatPath, 'attachments');
 
         try {
-            // Create chat directory
             fs.mkdirSync(chatPath, { recursive: true });
-
-            // Create attachments directory
             fs.mkdirSync(attachmentsPath, { recursive: true });
 
-            // Initial metadata
             const metadata = {
                 id: chatId,
                 title: title || `New conversation ${new Date().toLocaleDateString()}`,
@@ -90,14 +86,12 @@ class ChatStorageManager {
                 archived: false
             };
 
-            // Initial empty messages
             const messages = {
                 version: "1.0.0",
                 chatId: chatId,
                 messages: []
             };
 
-            // Save files
             fs.writeFileSync(path.join(chatPath, 'metadata.json'), JSON.stringify(metadata, null, 2));
             fs.writeFileSync(path.join(chatPath, 'messages.json'), JSON.stringify(messages, null, 2));
 
@@ -130,7 +124,7 @@ class ChatStorageManager {
 
             for (const chatDir of chatDirs) {
                 const metadataPath = path.join(this.conversationsPath, chatDir, 'metadata.json');
-                
+
                 if (fs.existsSync(metadataPath)) {
                     try {
                         const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
@@ -141,7 +135,6 @@ class ChatStorageManager {
                 }
             }
 
-            // Sort by last modification (most recent first)
             chats.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
 
             return {
@@ -207,29 +200,24 @@ class ChatStorageManager {
                 };
             }
 
-            // Load existing data
             const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
             const messages = JSON.parse(fs.readFileSync(messagesPath, 'utf8'));
 
-            // Create new message
             const messageId = `msg_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`;
             const newMessage = {
                 id: messageId,
                 timestamp: new Date().toISOString(),
-                role: role, // 'user' o 'assistant'
+                role: role,
                 content: content,
-                attachments: attachments // array di path relativi
+                attachments: attachments
             };
 
-            // Add message
             messages.messages.push(newMessage);
 
-            // Update metadata
             metadata.messageCount = messages.messages.length;
             metadata.lastModified = new Date().toISOString();
             metadata.hasAttachments = metadata.hasAttachments || attachments.length > 0;
 
-            // Save everything
             fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
             fs.writeFileSync(messagesPath, JSON.stringify(messages, null, 2));
 
@@ -249,7 +237,7 @@ class ChatStorageManager {
         }
     }
 
-    // Completely delete a conversation (atomic - chat + attachments)
+    // Delete a conversation
     deleteChat(chatId) {
         const chatPath = path.join(this.conversationsPath, chatId);
 
@@ -261,17 +249,15 @@ class ChatStorageManager {
                 };
             }
 
-            // Get info before deletion
             const metadataPath = path.join(chatPath, 'metadata.json');
             let metadata = null;
             if (fs.existsSync(metadataPath)) {
                 metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
             }
 
-            // Atomic deletion: removes directory and all content
             fs.rmSync(chatPath, { recursive: true, force: true });
 
-            console.log(`✅ Deleted chat completely: ${chatId}`);
+            console.log(`✅ Deleted chat: ${chatId}`);
             return {
                 success: true,
                 chatId: chatId,
@@ -300,8 +286,6 @@ class ChatStorageManager {
             }
 
             const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-
-            // Apply updates
             Object.assign(metadata, updates);
             metadata.lastModified = new Date().toISOString();
 
@@ -334,14 +318,12 @@ class ChatStorageManager {
             let totalSize = 0;
             let hasAttachmentsCount = 0;
 
-            // Calculate statistics
             for (const chat of allChats.chats) {
                 totalMessages += chat.messageCount || 0;
                 if (chat.hasAttachments) {
                     hasAttachmentsCount++;
                 }
 
-                // Calculate sizes (approximate)
                 const chatPath = path.join(this.conversationsPath, chat.id);
                 if (fs.existsSync(chatPath)) {
                     const files = fs.readdirSync(chatPath, { withFileTypes: true });
@@ -375,159 +357,7 @@ class ChatStorageManager {
         }
     }
 
-    // Save an attachment in the chat
-    saveAttachment(chatId, file, originalFilename) {
-        const chatPath = path.join(this.conversationsPath, chatId);
-        const attachmentsPath = path.join(chatPath, 'attachments');
-
-        try {
-            if (!fs.existsSync(chatPath)) {
-                return {
-                    success: false,
-                    error: 'Chat not found'
-                };
-            }
-
-            // Make sure attachments folder exists
-            if (!fs.existsSync(attachmentsPath)) {
-                fs.mkdirSync(attachmentsPath, { recursive: true });
-            }
-
-            // Generate safe filename
-            const timestamp = Date.now();
-            const randomId = crypto.randomBytes(4).toString('hex');
-
-            // Make sure originalFilename is a string
-            const filename = Buffer.isBuffer(originalFilename) ? originalFilename.toString() : originalFilename;
-            const ext = path.extname(filename);
-            const safeFilename = `${timestamp}_${randomId}${ext}`;
-            const filePath = path.join(attachmentsPath, safeFilename);
-
-            // Save the file
-            fs.writeFileSync(filePath, file);
-
-            // Update metadata
-            const metadataPath = path.join(chatPath, 'metadata.json');
-            if (fs.existsSync(metadataPath)) {
-                const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-                metadata.hasAttachments = true;
-                metadata.lastModified = new Date().toISOString();
-                fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-            }
-
-            console.log(`✅ Attachment saved: ${safeFilename} in chat ${chatId}`);
-            return {
-                success: true,
-                filename: safeFilename,
-                originalName: originalFilename,
-                size: file.length,
-                path: `attachments/${safeFilename}`
-            };
-
-        } catch (error) {
-            console.error(`❌ Error saving attachment in chat ${chatId}:`, error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-
-    // Load an attachment from the chat
-    getAttachment(chatId, filename) {
-        const attachmentPath = path.join(this.conversationsPath, chatId, 'attachments', filename);
-
-        try {
-            if (!fs.existsSync(attachmentPath)) {
-                return {
-                    success: false,
-                    error: 'Attachment not found'
-                };
-            }
-
-            const fileData = fs.readFileSync(attachmentPath);
-            const stats = fs.statSync(attachmentPath);
-
-            return {
-                success: true,
-                data: fileData,
-                size: stats.size,
-                modified: stats.mtime
-            };
-
-        } catch (error) {
-            console.error(`❌ Error loading attachment ${filename} from chat ${chatId}:`, error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-
-    // List attachments of a chat
-    listAttachments(chatId) {
-        const attachmentsPath = path.join(this.conversationsPath, chatId, 'attachments');
-
-        try {
-            if (!fs.existsSync(attachmentsPath)) {
-                return {
-                    success: true,
-                    attachments: []
-                };
-            }
-
-            const files = fs.readdirSync(attachmentsPath);
-            const attachments = [];
-
-            for (const file of files) {
-                const filePath = path.join(attachmentsPath, file);
-                const stats = fs.statSync(filePath);
-                
-                attachments.push({
-                    filename: file,
-                    size: stats.size,
-                    modified: stats.mtime.toISOString(),
-                    type: this.getFileType(file)
-                });
-            }
-
-            return {
-                success: true,
-                attachments: attachments
-            };
-
-        } catch (error) {
-            console.error(`❌ Error listing attachments for chat ${chatId}:`, error);
-            return {
-                success: false,
-                error: error.message,
-                attachments: []
-            };
-        }
-    }
-
-    // Determine file type
-    getFileType(filename) {
-        const ext = path.extname(filename).toLowerCase();
-        
-        if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'].includes(ext)) {
-            return 'image';
-        } else if (['.pdf'].includes(ext)) {
-            return 'pdf';
-        } else if (['.doc', '.docx', '.txt', '.rtf'].includes(ext)) {
-            return 'document';
-        } else if (['.xls', '.xlsx', '.csv'].includes(ext)) {
-            return 'spreadsheet';
-        } else if (['.mp4', '.avi', '.mov', '.wmv', '.webm'].includes(ext)) {
-            return 'video';
-        } else if (['.mp3', '.wav', '.ogg', '.m4a'].includes(ext)) {
-            return 'audio';
-        } else {
-            return 'other';
-        }
-    }
-
-    // Cleanup: delete old chats beyond the limit
+    // Cleanup old chats
     cleanupOldChats(maxChats = 100) {
         try {
             const allChats = this.getAllChats();
@@ -540,7 +370,6 @@ class ChatStorageManager {
                 };
             }
 
-            // Get chats to delete (beyond the limit)
             const chatsToDelete = allChats.chats.slice(maxChats);
             let deletedCount = 0;
 
@@ -567,61 +396,43 @@ class ChatStorageManager {
         }
     }
 
-    // Get all attachments for a chat with full metadata (for AI processing)
-    getChatAttachments(chatId) {
-        const attachmentsPath = path.join(this.conversationsPath, chatId, 'attachments');
+    // ========== ATTACHMENT METHODS (delegated) ==========
 
-        try {
-            if (!fs.existsSync(attachmentsPath)) {
-                return [];
+    saveAttachment(chatId, file, originalFilename) {
+        const result = this.attachmentStorage.saveAttachment(chatId, file, originalFilename);
+
+        // Update metadata if successful
+        if (result.success) {
+            const metadataPath = path.join(this.conversationsPath, chatId, 'metadata.json');
+            if (fs.existsSync(metadataPath)) {
+                const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+                metadata.hasAttachments = true;
+                metadata.lastModified = new Date().toISOString();
+                fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
             }
-
-            const files = fs.readdirSync(attachmentsPath);
-            const attachments = [];
-
-            for (const file of files) {
-                const filePath = path.join(attachmentsPath, file);
-                const stats = fs.statSync(filePath);
-                
-                attachments.push({
-                    filename: file,
-                    originalname: file, // For compatibility with multer format
-                    path: filePath,     // Full path to file
-                    size: stats.size,
-                    modified: stats.mtime.toISOString(),
-                    type: this.getFileType(file),
-                    mimetype: this.getMimeType(file)
-                });
-            }
-
-            console.log(`📎 Found ${attachments.length} attachments for chat ${chatId}`);
-            return attachments;
-
-        } catch (error) {
-            console.error(`❌ Error getting chat attachments for ${chatId}:`, error);
-            return [];
         }
+
+        return result;
     }
 
-    // Get MIME type for file (helper for attachment processing)
-    getMimeType(filename) {
-        const ext = path.extname(filename).toLowerCase();
-        
-        const mimeTypes = {
-            '.txt': 'text/plain',
-            '.md': 'text/markdown',
-            '.csv': 'text/csv',
-            '.json': 'application/json',
-            '.pdf': 'application/pdf',
-            '.doc': 'application/msword',
-            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.png': 'image/png',
-            '.gif': 'image/gif'
-        };
+    getAttachment(chatId, filename) {
+        return this.attachmentStorage.getAttachment(chatId, filename);
+    }
 
-        return mimeTypes[ext] || 'application/octet-stream';
+    listAttachments(chatId) {
+        return this.attachmentStorage.listAttachments(chatId);
+    }
+
+    getChatAttachments(chatId) {
+        return this.attachmentStorage.getChatAttachments(chatId);
+    }
+
+    getFileType(filename) {
+        return this.attachmentStorage.getFileType(filename);
+    }
+
+    getMimeType(filename) {
+        return this.attachmentStorage.getMimeType(filename);
     }
 }
 

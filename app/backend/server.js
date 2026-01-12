@@ -400,5 +400,3 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-// Export per testing
-module.exports = { server, router, chatController, modelController, ollamaController };
