@@ -226,12 +226,6 @@ class MCPManager {
                             onclick="mcpManager.toggleServer('${server.name}', ${!server.enabled})">
                         ${server.enabled ? 'Disable' : 'Enable'}
                     </button>
-                    ${server.connected ? `
-                        <button class="btn btn-xs mcp-test-btn"
-                                onclick="mcpManager.testServer('${server.name}')">
-                            Test
-                        </button>
-                    ` : ''}
                 </div>
             </div>
         `;
@@ -318,56 +312,6 @@ class MCPManager {
         } catch (error) {
             console.error('❌ Error toggling server:', error);
             this.showNotification(`Error: ${error.message}`, 'error');
-        }
-    }
-
-    /**
-     * Test MCP server connection
-     */
-    async testServer(serverName) {
-        try {
-            console.log(`🧪 Testing server ${serverName}...`);
-            this.showNotification(`Testing ${serverName}...`, 'info');
-
-            // Reload status to verify connection
-            const response = await fetch('/api/mcp/servers');
-            const data = await response.json();
-
-            if (data.success && data.data.servers) {
-                const server = data.data.servers.find(s => s.name === serverName);
-
-                if (server) {
-                    if (server.connected) {
-                        // Get server tools info
-                        const toolsResponse = await fetch('/api/mcp/tools');
-                        const toolsData = await toolsResponse.json();
-
-                        const toolCount = toolsData.success ? toolsData.data.count : 0;
-                        this.showNotification(
-                            `${serverName}: Connected with ${toolCount} tools available`,
-                            'success'
-                        );
-                    } else if (server.enabled) {
-                        this.showNotification(
-                            `${serverName}: Enabled but not connected. Verify MCP server is installed.`,
-                            'warning'
-                        );
-                    } else {
-                        this.showNotification(
-                            `${serverName}: Server disabled`,
-                            'info'
-                        );
-                    }
-                } else {
-                    this.showNotification(`Server ${serverName} not found`, 'error');
-                }
-            } else {
-                this.showNotification('Error retrieving server status', 'error');
-            }
-
-        } catch (error) {
-            console.error('❌ Error testing server:', error);
-            this.showNotification(`Test error: ${error.message}`, 'error');
         }
     }
 

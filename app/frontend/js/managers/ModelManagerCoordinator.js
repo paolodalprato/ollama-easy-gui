@@ -213,10 +213,11 @@ class ModelManagerCoordinator {
             select.innerHTML = '<option value="">Select a model</option>';
 
             // Create options with system prompt indicators
+            // Uses * to indicate models with custom system prompt (same as Manage Models popup)
             const modelOptions = await Promise.all(this.app.models.map(async (model) => {
                 const sizeGB = (model.size / (1000**3)).toFixed(1);
                 const hasSystemPrompt = await this.app.hasSystemPrompt(model.name);
-                const systemPromptIndicator = hasSystemPrompt ? ' 🤖' : '';
+                const systemPromptIndicator = hasSystemPrompt ? ' *' : '';
                 
                 return {
                     name: model.name,
